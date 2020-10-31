@@ -7,29 +7,22 @@
 
 #define Set bool[64]
 
-struct {
+struct Ray {
 	int8_t pos[7];
 	size_t size;
-} Ray;
+};
 
-struct {
-	int8_t x;
-	int8_t y;
+struct ChessPiece {
+	int8_t pos;
 	int8_t color;
 	int8_t type;
 	bool   hasMoved;
-} ChessPiece;
+};
 
-struct {
-	int8_t pieceType;
-	Set moves;
-	Set isCastle;
-} MoveDetails;
-
-struct {
+struct ChessPieceMap {
 	Set pos;
 	ChessPiece* chessPiece[64];
-} ChessPieceMap;
+};
 
 /* Ray */
 int8_t step(Ray* ray, int8_t* index);

@@ -1,6 +1,7 @@
 #include <stdlib.h>
-#include "ChessConstants.h"
 #include <stdio.h>
+
+#include "ChessConstants.h"
 
 int main() {
 	printf("%d %d\n", allRays[43][3].pos[3], allRays[43][3].size);

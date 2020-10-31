@@ -2,14 +2,7 @@
 #define CHESS_CONSTANTS_H
 
 /* PROJECT HEADERS */
-//#include "DataTypes.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-struct Ray {
-	int8_t pos[7];
-	size_t size;
-};
+#include "DataTypes.h"
 
 /* General ****************/
 #define CP_NONE    -1
