@@ -32,7 +32,7 @@ def _debug(all_moves, pos, piece):
     return
 
 def generate():
-    all_moves = [list([list([False for k in range(64)]) for j in range(6)]) for i in range(64)]
+    all_moves = [list([list() for j in range(6)]) for i in range(64)]
 
     up_one    = set()
     left_one  = set()
@@ -73,52 +73,55 @@ def generate():
 
     for pos in range(64):
         if pos in up_one:
-            all_moves[pos][1][pos - 8] = True
+            all_moves[pos][1].append(pos - 8)
 
             if pos in left_one:
-                all_moves[pos][1][pos - 9] = True
+                all_moves[pos][1].append(pos - 9)
 
             if pos in right_one:
-                all_moves[pos][1][pos - 7] = True
+                all_moves[pos][1].append(pos - 7)
 
             if pos in left_two:
-                all_moves[pos][2][pos - 10] = True
+                all_moves[pos][2].append(pos - 10)
 
             if pos in right_two:
-                all_moves[pos][2][pos - 6] = True
+                all_moves[pos][2].append(pos - 6)
 
         if pos in down_one:
-            all_moves[pos][1][pos + 8] = True
+            all_moves[pos][1].append(pos + 8)
 
             if pos in left_one:
-                all_moves[pos][1][pos + 7] = True
+                all_moves[pos][1].append(pos + 7)
 
             if pos in right_one:
-                all_moves[pos][1][pos + 9] = True
+                all_moves[pos][1].append(pos + 9)
 
             if pos in left_two:
-                all_moves[pos][2][pos + 6] = True
+                all_moves[pos][2].append(pos + 6)
 
             if pos in right_two:
-                all_moves[pos][2][pos + 10] = True
+                all_moves[pos][2].append(pos + 10)
 
         if pos in left_one:
-            all_moves[pos][1][pos - 1] = True
+            all_moves[pos][1].append(pos - 1)
 
             if pos in up_two:
-                all_moves[pos][2][pos - 17] = True
+                all_moves[pos][2].append(pos - 17)
 
             if pos in down_two:
-                all_moves[pos][2][pos + 15] = True
+                all_moves[pos][2].append(pos + 15)
 
         if pos in right_one:
-            all_moves[pos][1][pos + 1] = True
+            all_moves[pos][1].append(pos + 1)
 
             if pos in up_two:
-                all_moves[pos][2][pos - 15] = True
+                all_moves[pos][2].append(pos - 15)
 
             if pos in down_two:
-                all_moves[pos][2][pos + 17] = True
+                all_moves[pos][2].append(pos + 17)
+
+        all_moves[pos][1].sort()
+        all_moves[pos][2].sort()
 
     return all_moves
 
@@ -128,27 +131,18 @@ def format(all_moves):
         formatted += '\t{\n'
 
         for j in range(6):
-            can_move = ','.join(list(map(lambda x: ['0', '1'][x], all_moves[i][j])))
-            formatted += f'\t\t{{{can_move}}},\n'
+            squares = ','.join(['%2d' % (square) for square in all_moves[i][j]] + ['-1' for n in range(8 - len(all_moves[i][j]))])
+            size = len(all_moves[i][j])
+            formatted += f'\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
 
         formatted += '\t},\n'
 
     formatted += '}'
 
-    var = 'const bool pointMoves[64][6][64]'
+    var = 'struct Vector8 pointMoves[64][6]'
 
     return f'{var} = {formatted};'
 
 if __name__ == '__main__':
-    all_moves = generate()
-    _debug(all_moves,  0, 1)
-    _debug(all_moves,  7, 1)
-    _debug(all_moves, 27, 1)
-    _debug(all_moves, 56, 1)
-    _debug(all_moves, 63, 1)
-    _debug(all_moves,  0, 2)
-    _debug(all_moves,  7, 2)
-    _debug(all_moves, 27, 2)
-    _debug(all_moves, 56, 2)
-    _debug(all_moves, 63, 2)
-    _debug(all_moves, 27, 0)
+    print('No debug function found')
+

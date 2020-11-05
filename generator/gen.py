@@ -9,11 +9,10 @@
 from importlib import import_module
 
 def main():
-    castle_moves = import_module('castlemoves')
-    pawn_moves   = import_module('pawnmoves')
-    point_moves  = import_module('pointmoves')
-    ray_moves    = import_module('raymoves')
-    rays         = import_module('rays')
+    point_moves   = import_module('pointmoves')
+    ray_moves     = import_module('raymoves')
+    rays          = import_module('rays')
+    capture_piece = import_module('capturepiece')
 
     with open('chessconstants.c', 'w') as constants:
         constants.write(f'''#include "ChessConstants.h"
@@ -24,9 +23,7 @@ def main():
 
 {point_moves.format(point_moves.generate())}
 
-{castle_moves.format(castle_moves.generate())}
-
-{pawn_moves.format(pawn_moves.generate())}
+{capture_piece.format(capture_piece.generate())}
 
 ''')
 

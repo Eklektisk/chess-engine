@@ -34,40 +34,35 @@
 #define CP_CASTLE_Q 1
 /**************************/
 
-extern const struct Ray allRays[64][8];
-/*
- * initPos
+// Using the honor code - these variables should never be modified!
+
+extern struct Ray allRays[64][8];
+/* initPos
  * ray
  */
 
-extern const bool rayMoves[64][6][8][64];
+extern int8_t rayContains[64][64];
 /* initPos
- * type
  * ray
  * endPos
  */
 
-extern const bool pointMoves[64][6][64];
+extern struct Ray rayMoves[64][6][8];
 /* initPos
  * type
- * endPos
+ * ray
  */
 
-extern const bool castleMoves[64][2][2][2][2][64];
+extern struct Vector8 pointMoves[64][6];
 /* initPos
- * kingHasMoved
- * castleDir
- * rookHasMoved
- * isRook
- * endPos
+ * type
  */
 
-extern const bool pawnMoves[64][2][2][2][64];
-/* initPos
- * color
- * hasMoved
- * endEmpty
- * endPos
+extern bool capturePiece[64][6][2][64];
+/* piecePos
+ * pieceType
+ * pieceColor
+ * capturePos
  */
 
 #endif

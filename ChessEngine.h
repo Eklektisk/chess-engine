@@ -2,17 +2,36 @@
 #define GAME_H
 
 #include "DataTypes.h"
+#include "ChessConstants.h"
 
-struct MoveInfo {
-	struct ChessPiece* piece;
-	int8_t newPos;
-	int8_t castleType;
+struct ChessPiece {
+	int8_t pos;
+	int8_t color;
+	int8_t type;
+	bool   hasMoved;
 };
+
+struct ChessPieceMap {
+	bool pos[64];
+	struct ChessPiece* piece[64];
+};
+
+struct MoveDetails {
+	struct ChessPiece* cp;
+	int8_t newPos;
+	int8_t castle;
+};
+
+struct CPVector {
+	struct MoveDetails validMoves[84];
+	size_t size;
+};
+
 
 struct Player {
 	int8_t kingPos;
 	int8_t kingCheck;
-	Set opposingAlongKingRay;
+	int8_t color;
 
 	struct ChessPiece rook_Q;
 	struct ChessPiece knight_Q;
@@ -31,33 +50,25 @@ struct Player {
 	struct ChessPiece pawn_NK;
 	struct ChessPiece pawn_RK;
 
-	Set piecePos;
+	struct ChessPieceMap pieces;
 
-	struct MoveInfo possibleMoves[84];
-	size_t countMoves;
+	struct CPVector moves;
 };
 
-struct {
-	struct ChessPieceMap chessPieceMap;
+struct Board {
+	struct Player white;
+	struct Player black;
 
-	int8_t whiteKingPos;
-	int8_t blackKingPos;
-
-	Set blackAlongWhiteKingRay;
-	Set whiteAlongBlackKingRay;
-
-	int8_t whiteKingCheck;
-	int8_t blackKingCheck;
-
-	bool isCastle;
 	uint8_t turn;
-} Game;
+	bool isOver;
+};
 
-size_t genMoves(Game* game, int8_t color);
-bool vaidateMove(Game* game, int8_t color, int8_t moveNum);
-void doMove(Game* game, int8_t color, int8_t moveNum);
-void postMoveActions(Game* game, int8_t color, int8_t moveNum);
-void updateCheck(Game* game, int8_t color);
-void updateTurn(Game* game);
+void setPiece(struct Player* player, struct ChessPiece* piece, int8_t pos);
+size_t genMoves(struct Board* board);
+bool vaidateMove(struct Board* board, int8_t moveNum);
+void doMove(struct Board* board, int8_t moveNum);
+void postMoveActions(struct Board* board, int8_t moveNum);
+void updateGameStatus(struct Board* board);
+void switchTurn(struct Board* board);
 
 #endif

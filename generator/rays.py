@@ -77,24 +77,31 @@ def generate():
     return all_rays
 
 def format(all_rays):
-    formatted = '{\n'
+    formattedOne = '{\n'
+    formattedTwo = '{\n'
     for i in range(64):
-        formatted += '\t{\n'
+        ray_contains = ['-1' for i in range(64)]
+
+        formattedOne += '\t{\n'
 
         for j in range(8):
             squares = ','.join(['%2d' % (square) for square in all_rays[i][j]] + ['-1' for n in range(7 - len(all_rays[i][j]))])
-
             size = len(all_rays[i][j])
+            formattedOne += f'\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
 
-            formatted += f'\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
+            for square in all_rays[i][j]:
+                ray_contains[square] = f'{j}'
 
-        formatted += '\t},\n'
+        formattedOne += '\t},\n'
+        formattedTwo += f'\t{{{",".join(ray_contains)}}},\n'
 
-    formatted += '}'
+    formattedOne += '}'
+    formattedTwo += '}'
 
-    var = 'const struct Ray allRays[64][8]'
+    varOne = 'struct Ray allRays[64][8]'
+    varTwo = 'int8_t rayContains[64][64]'
 
-    return f'{var} = {formatted};'
+    return f'{varOne} = {formattedOne};\n\n{varTwo} = {formattedTwo};'
 
 if __name__ == '__main__':
     all_rays = generate()
@@ -103,3 +110,4 @@ if __name__ == '__main__':
     _debug(all_rays, 27)
     _debug(all_rays, 56)
     _debug(all_rays, 63)
+
