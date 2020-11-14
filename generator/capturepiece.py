@@ -170,16 +170,6 @@ def generate():
 
     # PAWN MOVES
     for x in range(8):
-        if x > 0:
-            capture_piece[8 + x][3][1][23 + x] = True
-
-            capture_piece[48 + x][3][0][31 + x] = True
-
-        if x < 7:
-            capture_piece[8 + x][3][1][25 + x] = True
-
-            capture_piece[48 + x][3][0][33 + x] = True
-
         for y in range(1,7):
             init_b_pos = y * 8 + x
             init_w_pos = (7 - y) * 8 + x

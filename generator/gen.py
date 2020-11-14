@@ -14,8 +14,8 @@ def main():
     rays          = import_module('rays')
     capture_piece = import_module('capturepiece')
 
-    with open('chessconstants.c', 'w') as constants:
-        constants.write(f'''#include "ChessConstants.h"
+    with open('lookups.c', 'w') as constants:
+        constants.write(f'''#include "Lookups.h"
 
 {rays.format(rays.generate())}
 

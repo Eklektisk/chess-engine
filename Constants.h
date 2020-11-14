@@ -1,8 +1,5 @@
-#ifndef CHESS_CONSTANTS_H
-#define CHESS_CONSTANTS_H
-
-/* PROJECT HEADERS */
-#include "DataTypes.h"
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 /* General ****************/
 #define CP_NONE    -1
@@ -30,39 +27,8 @@
 #define CP_LEFT     6
 #define CP_TOPLEFT  7
 /* Castle Direction *******/
-#define CP_CASTLE_K 0
-#define CP_CASTLE_Q 1
+#define CP_CASTLE_Q 0
+#define CP_CASTLE_K 1
 /**************************/
-
-// Using the honor code - these variables should never be modified!
-
-extern struct Ray allRays[64][8];
-/* initPos
- * ray
- */
-
-extern int8_t rayContains[64][64];
-/* initPos
- * ray
- * endPos
- */
-
-extern struct Ray rayMoves[64][6][8];
-/* initPos
- * type
- * ray
- */
-
-extern struct Vector8 pointMoves[64][6];
-/* initPos
- * type
- */
-
-extern bool capturePiece[64][6][2][64];
-/* piecePos
- * pieceType
- * pieceColor
- * capturePos
- */
 
 #endif

@@ -1,14 +1,16 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef CHESS_ENGINE_H
+#define CHESS_ENGINE_H
 
 #include "DataTypes.h"
-#include "ChessConstants.h"
+#include "Constants.h"
 
 struct ChessPiece {
 	int8_t pos;
 	int8_t color;
 	int8_t type;
+	bool   taken;
 	bool   hasMoved;
+	bool   jumped;
 };
 
 struct ChessPieceMap {
@@ -20,10 +22,13 @@ struct MoveDetails {
 	struct ChessPiece* cp;
 	int8_t newPos;
 	int8_t castle;
+	bool jump;
+	bool enPassant;
+	int8_t transform;
 };
 
 struct CPVector {
-	struct MoveDetails validMoves[84];
+	struct MoveDetails mv[84];
 	size_t size;
 };
 
@@ -63,12 +68,17 @@ struct Board {
 	bool isOver;
 };
 
-void setPiece(struct Player* player, struct ChessPiece* piece, int8_t pos);
+struct Board initBoard();
+void setPiece(
+	struct Player* player,
+	struct ChessPiece* piece,
+	int8_t pos,
+	bool hasMoved,
+	bool jumped
+);
 size_t genMoves(struct Board* board);
-bool vaidateMove(struct Board* board, int8_t moveNum);
 void doMove(struct Board* board, int8_t moveNum);
 void postMoveActions(struct Board* board, int8_t moveNum);
-void updateGameStatus(struct Board* board);
 void switchTurn(struct Board* board);
 
 #endif
