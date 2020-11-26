@@ -20,19 +20,37 @@ You can either compile it as is, or include it in your project.
 
 ### Compiling ###
 ```make
-gcc demo.c chessconstants.c datatypes.c chessengine.c -o demo
+cd examples
+make debug
 ```
 
 As of now, demo.c only prints a test statement confirming that chessconstants.c was properly implemented.
 This will eventually allow you to play a chess game in the terminal against another player.
 
 ### Including ###
+This can be included as a shared library or directly with source code. Using a static library causes the engine to produce different, and sometimes incorrect, results. I am unsure why this is the case.
+
+#### As a Shared Library ####
+Add the following header file,...
+```cpp
+#include <ChessEngine.h>
+```
+...and link the library.
+```make
+gcc <your_files> -L<path_to_folder/chessengine> -lchessengine -I<path_to_folder/chessengine> -o <program_name>
+```
+
+When running your program, either move libchessengine.so to a valid folder or prepend `LD_LIBRARY_PATH=<path_to_folder/chessengine>` to your application.
+
+#### From Source ####
+Add the following header file,...
 ```cpp
 #include "ChessEngine.h"
 ```
-
-It should work alright, but I still need to update `demo.c` and run some tests to make sure that everything works as expected.
-
+...and include the appropriate files
+```make
+gcc <your_files> <path_to_folder/chessengine>/*.c -I<path_to_folder/chessengine> -o <program_name>
+```
 ## Contributing ##
 All help is appreciated.
 

@@ -1,6 +1,12 @@
 #include "ChessEngine.h"
 #include "Lookups.h"
 
+/* LOS End Conditions *****/
+#define CP_ATTACKER 0
+#define CP_DEFENDER 1
+#define CP_BOTH     2
+/**************************/
+
 void movePiece(struct Player* player, struct ChessPiece* piece, int8_t newPos) {
 	player->pieces.pos[piece->pos] = false;
 	player->pieces.pos[newPos]     = true;
@@ -18,33 +24,31 @@ bool inLineOfSight(
 	int8_t end,
 	struct Player* attacker,
 	struct Player* defender,
-	bool clear
+	int8_t condition
 ) {
+	int8_t selRay = rayContains[start][end];
+
+	if(selRay == CP_NONE) {
+		return false;
+	}
+
 	int8_t index = 0;
-	int8_t pos;
+	int8_t pos   = allRays[start][selRay].pos[index++];
 
-	switch(rayContains[start][end]) {
-		case CP_TOP:      // FALL THROUGH
-		case CP_TOPRIGHT: // FALL THROUGH
-		case CP_RIGHT:    // FALL THROUGH
-		case CP_BOTRIGHT: // FALL THROUGH
-		case CP_BOTTOM:   // FALL THROUGH
-		case CP_BOTLEFT:  // FALL THROUGH
-		case CP_LEFT:     // FALL THROUGH
-		case CP_TOPLEFT:
-			while((pos = rayStep(&allRays[start][rayContains[start][end]], &index)) != end) {
-				if(attacker->pieces.pos[pos] || defender->pieces.pos[pos]) { return false; }
-			}
+	while(pos != end) {
+		if(attacker->pieces.pos[pos] || defender->pieces.pos[pos]) { return false; }
+		pos = allRays[start][selRay].pos[index++];
+	}
 
-			if(clear) {
-				return !(attacker->pieces.pos[pos] || defender->pieces.pos[pos]);
-			} else {
-				return !attacker->pieces.pos[pos];
-			}
-
+	switch(condition) {
 		case CP_NONE:
-			return false;
-
+			return !(attacker->pieces.pos[pos] || defender->pieces.pos[pos]);
+		case CP_ATTACKER:
+			return !defender->pieces.pos[pos];
+		case CP_DEFENDER:
+			return !attacker->pieces.pos[pos];
+		case CP_BOTH:
+			return true;
 	}
 }
 
@@ -62,7 +66,7 @@ bool canPieceCapture(
 		case CP_ROOK:
 			return (
 				capturePiece[pieceOne->pos][pieceOne->type][pieceOne->color][pieceTwo->pos] &&
-				inLineOfSight(pieceOne->pos, pieceTwo->pos, attacker, defender, false)
+				inLineOfSight(pieceOne->pos, pieceTwo->pos, attacker, defender, CP_DEFENDER)
 			);
 
 		case CP_KING:   // FALL THROUGH
@@ -72,113 +76,236 @@ bool canPieceCapture(
 	}
 }
 
-bool ignorePiece(struct ChessPiece* piece, int8_t ignorePos) {
-	switch(ignorePos) {
-		case -1:
-			return piece->taken;
-		default:
-			return piece->taken || piece->pos == ignorePos;
+bool validateMove(struct Player* attacker, struct Player* defender, int8_t ignorePos) {
+	if(!(attacker->rook_Q.taken || attacker->rook_Q.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->rook_Q),   &(defender->king), attacker, defender)) {
+			return false;
+		}
 	}
+
+	if(!(attacker->knight_Q.taken || attacker->knight_Q.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->knight_Q), &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->bishop_Q.taken || attacker->bishop_Q.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->bishop_Q), &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->queen.taken || attacker->queen.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->queen),    &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->king.taken || attacker->king.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->king),     &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->bishop_K.taken || attacker->bishop_K.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->bishop_K), &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->knight_K.taken || attacker->knight_K.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->knight_K), &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->rook_K.taken || attacker->rook_K.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->rook_K),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_RQ.taken || attacker->pawn_RQ.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_RQ),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_NQ.taken || attacker->pawn_NQ.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_NQ),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_BQ.taken || attacker->pawn_BQ.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_BQ),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_Q.taken || attacker->pawn_Q.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_Q),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_K.taken || attacker->pawn_K.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_K),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_BK.taken || attacker->pawn_BK.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_BK),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_NK.taken || attacker->pawn_NK.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_NK),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	if(!(attacker->pawn_RK.taken || attacker->pawn_RK.pos == ignorePos)) {
+		if(canPieceCapture(&(attacker->pawn_RK),   &(defender->king), attacker, defender)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
-int8_t getCheckStatus(struct Player* attacker, struct Player* defender, int8_t ignorePos) {
+int8_t getCheckStatus(struct Player* attacker, struct Player* defender) {
 	int8_t checkStatus = CP_NONE;
 
-	if(
-		!ignorePiece(&attacker->rook_Q, ignorePos) &&
-		canPieceCapture(&(attacker->rook_Q),  &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->rook_Q.taken) {
+		if(canPieceCapture(&(attacker->rook_Q),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->knight_Q, ignorePos) &&
-		canPieceCapture(&(attacker->knight_Q), &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->knight_Q.taken) {
+		if(canPieceCapture(&(attacker->knight_Q), &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->bishop_Q, ignorePos) &&
-		canPieceCapture(&(attacker->bishop_Q), &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->bishop_Q.taken) {
+		if(canPieceCapture(&(attacker->bishop_Q), &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->queen, ignorePos) &&
-		canPieceCapture(&(attacker->queen),    &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->queen.taken) {
+		if(canPieceCapture(&(attacker->queen),    &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->king, ignorePos) &&
-		canPieceCapture(&(attacker->king),     &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->king.taken) {
+		if(canPieceCapture(&(attacker->king),     &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->bishop_K, ignorePos) &&
-		canPieceCapture(&(attacker->bishop_K), &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->bishop_K.taken) {
+		if(canPieceCapture(&(attacker->bishop_K), &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->knight_K, ignorePos) &&
-		canPieceCapture(&(attacker->knight_K), &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->knight_K.taken) {
+		if(canPieceCapture(&(attacker->knight_K), &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->rook_K, ignorePos) &&
-		canPieceCapture(&(attacker->rook_K),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->rook_K.taken) {
+		if(canPieceCapture(&(attacker->rook_K),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_RQ, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_RQ),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_RQ.taken) {
+		if(canPieceCapture(&(attacker->pawn_RQ),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_NQ, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_NQ),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_NQ.taken) {
+		if(canPieceCapture(&(attacker->pawn_NQ),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_BQ, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_BQ),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_BQ.taken) {
+		if(canPieceCapture(&(attacker->pawn_BQ),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_Q, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_Q),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_Q.taken) {
+		if(canPieceCapture(&(attacker->pawn_Q),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_K, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_K),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_K.taken) {
+		if(canPieceCapture(&(attacker->pawn_K),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_BK, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_BK),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_BK.taken) {
+		if(canPieceCapture(&(attacker->pawn_BK),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_NK, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_NK),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_NK.taken) {
+		if(canPieceCapture(&(attacker->pawn_NK),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
-	if(
-		!ignorePiece(&attacker->pawn_RK, ignorePos) &&
-		canPieceCapture(&(attacker->pawn_RK),   &(defender->king), attacker, defender) &&
-		++checkStatus == CP_DOUBLE
-	) { return CP_DOUBLE; }
+	if(!attacker->pawn_RK.taken) {
+		if(canPieceCapture(&(attacker->pawn_RK),   &(defender->king), attacker, defender)) {
+			if(++checkStatus == CP_DOUBLE) {
+				return CP_DOUBLE;
+			}
+		}
+	}
 
 	return checkStatus;
 }
@@ -192,19 +319,15 @@ void findLegalOnRay(
 ) {
 	const int8_t initPos = piece->pos;
 
-	for(
-		int8_t* move = moveList->pos;
-		move < moveList->pos + moveList->size;
-		++move
-	) {
-		if(active->pieces.pos[*move]) { break; }
+	for(int8_t i = 0; i <  moveList->size; ++i) {
+		if(active->pieces.pos[moveList->pos[i]]) { break; }
 
-		movePiece(active, piece, *move);
+		movePiece(active, piece, moveList->pos[i]);
 
-		if(getCheckStatus(other, active, *move) == CP_NONE) {
-			validList->mv[validList->size++] = (struct MoveDetails) {
+		if(validateMove(other, active, moveList->pos[i])) {
+			validList->mv[(validList->size)++] = (struct MoveDetails) {
 				cp: piece,
-				newPos: *move,
+				newPos: moveList->pos[i],
 				castle: CP_NONE,
 				jump: false,
 				enPassant: false,
@@ -212,7 +335,7 @@ void findLegalOnRay(
 			};
 		}
 
-		if(other->pieces.pos[*move]) { break; }
+		if(other->pieces.pos[moveList->pos[i]]) { break; }
 	}
 
 	movePiece(active, piece, initPos);
@@ -227,19 +350,15 @@ void findLegalMoves(
 ) {
 	const int8_t initPos = piece->pos;
 
-	for(
-		int8_t* move = moveList->pos;
-		move < moveList->pos + moveList->size;
-		++move
-	) {
-		if(active->pieces.pos[*move]) { continue; }
+	for(int8_t i = 0; i < moveList->size; ++i) {
+		if(active->pieces.pos[moveList->pos[i]]) { continue; }
 
-		movePiece(active, piece, *move);
+		movePiece(active, piece, moveList->pos[i]);
 
-		if(getCheckStatus(other, active, *move) == CP_NONE) {
-			validList->mv[validList->size++] = (struct MoveDetails) {
+		if(validateMove(other, active, moveList->pos[i])) {
+			validList->mv[(validList->size)++] = (struct MoveDetails) {
 				cp: piece,
-				newPos: *move,
+				newPos: moveList->pos[i],
 				castle: CP_NONE,
 				jump: false,
 				enPassant: false,
@@ -252,27 +371,34 @@ void findLegalMoves(
 }
 
 void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Player* active, struct Player* other) {
-	if(piece->pos == -1) { return; }
+	if(piece->taken) { return; }
 
 	switch(piece->type) {
 		case CP_BISHOP:
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_BISHOP][1], validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_BISHOP][3], validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_BISHOP][5], validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_BISHOP][7], validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_BISHOP][1]), validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_BISHOP][3]), validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_BISHOP][5]), validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_BISHOP][7]), validList, active, other);
 			break;
 
 		case CP_KING:
-			findLegalMoves(piece, &pointMoves[piece->pos][CP_KING],    validList, active, other);
+			findLegalMoves(piece, &(pointMoves[piece->pos][CP_KING]),    validList, active, other);
 			break;
 
 		case CP_KNIGHT:
-			findLegalMoves(piece, &pointMoves[piece->pos][CP_KNIGHT],  validList, active, other);
+			findLegalMoves(piece, &(pointMoves[piece->pos][CP_KNIGHT]),  validList, active, other);
 			break;
 
 		case CP_PAWN:
 			switch(piece->color) {
 				case CP_WHITE:
+					/*
+					 * Moving to:                | Action:
+					 * * 00 01 02 03 04 05 06 07 | Transform to B,N,Q,R
+					 * * 48 49 50 51 52 53 54 55 | Check for jump
+					 * * ----------------------- | Nothing
+					 */
+
 					if(!(active->pieces.pos[piece->pos - 8] || other->pieces.pos[piece->pos - 8])) {
 						int8_t initPos = piece->pos;
 						movePiece(active, piece, piece->pos - 8);
@@ -286,7 +412,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 5: // FALL THROUGH
 							case 6: // FALL THROUGH
 							case 7:
-								if(getCheckStatus(other, active, -1) == CP_NONE) {
+								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -324,7 +450,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								break;
 
 							default: // FALL THROUGH
-								if(getCheckStatus(other, active, -1) == CP_NONE) {
+								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -352,7 +478,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								) {
 									movePiece(active, piece, piece->pos - 8);
 
-									if(getCheckStatus(other, active, -1) == CP_NONE) {
+									if(validateMove(other, active, -1)) {
 										validList->mv[validList->size++] = (struct MoveDetails) {
 											cp: piece,
 											newPos: piece->pos,
@@ -370,6 +496,13 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						movePiece(active, piece, initPos);
 					}
 
+					/*
+					 * Starting at:              | Action:
+					 * * 08 09 10 11 12 13 14 15 | Transform to B,N,Q,R
+					 * * 24 25 26 27 28 29 30 31 | Check for en passant
+					 * * ----------------------- | Nothing
+					 */
+
 					switch(piece->pos) {
 						case  8: // FALL THROUGH
 						case  9: // FALL THROUGH
@@ -379,10 +512,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						case 13: // FALL THROUGH
 						case 14: // FALL THROUGH
 						case 15:
-							if(other->pieces.pos[piece->pos - 7]) {
+							if(piece->pos != 15 && other->pieces.pos[piece->pos - 7]) {
 								movePiece(active, piece, piece->pos - 7);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -420,10 +553,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 7);
 							}
 
-							if(other->pieces.pos[piece->pos - 9]) {
+							if(piece->pos != 8 && other->pieces.pos[piece->pos - 9]) {
 								movePiece(active, piece, piece->pos - 9);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -464,10 +597,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							break;
 
 						default:
-							if(other->pieces.pos[piece->pos - 7]) {
+							if(piece->pos % 8 != 7 && other->pieces.pos[piece->pos - 7]) {
 								movePiece(active, piece, piece->pos - 7);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -481,10 +614,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 7);
 							}
 
-							if(other->pieces.pos[piece->pos - 9]) {
+							if(piece->pos % 8 != 0 && other->pieces.pos[piece->pos - 9]) {
 								movePiece(active, piece, piece->pos - 9);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -508,15 +641,15 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						case 29: // FALL THROUGH
 						case 30: // FALL THROUGH
 						case 31:
-							// En passant
 							if(
+								piece->pos != 31 &&
 								other->pieces.pos[piece->pos + 1] &&
 								other->pieces.piece[piece->pos + 1]->type == CP_PAWN &&
 								other->pieces.piece[piece->pos + 1]->jumped
 							) {
 								movePiece(active, piece, piece->pos - 7);
 
-								if(getCheckStatus(other, active, piece->pos + 8) == CP_NONE) {
+								if(validateMove(other, active, piece->pos + 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -531,13 +664,14 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							}
 
 							if(
+								piece->pos  != 24 &&
 								other->pieces.pos[piece->pos - 1] &&
 								other->pieces.piece[piece->pos - 1]->type == CP_PAWN &&
 								other->pieces.piece[piece->pos - 1]->jumped
 							) {
 								movePiece(active, piece, piece->pos - 9);
 
-								if(getCheckStatus(other, active, piece->pos + 8) == CP_NONE) {
+								if(validateMove(other, active, piece->pos + 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -557,6 +691,13 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 					break;
 
 				case CP_BLACK:
+					/*
+					 * Moving to:                | Action:
+					 * * 56 57 58 59 60 61 62 63 | Transform to B,N,Q,R
+					 * * 16 17 18 19 20 21 22 23 | Check for jump
+					 * * ----------------------- | Nothing
+					 */
+
 					if(!(active->pieces.pos[piece->pos + 8] || other->pieces.pos[piece->pos + 8])) {
 						int8_t initPos = piece->pos;
 						movePiece(active, piece, piece->pos + 8);
@@ -570,7 +711,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 58: // FALL THROUGH
 							case 57: // FALL THROUGH
 							case 56:
-								if(getCheckStatus(other, active, -1) == CP_NONE) {
+								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -608,7 +749,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								break;
 
 							default: // FALL THROUGH
-								if(getCheckStatus(other, active, -1) == CP_NONE) {
+								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -636,7 +777,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								) {
 									movePiece(active, piece, piece->pos + 8);
 
-									if(getCheckStatus(other, active, -1) == CP_NONE) {
+									if(validateMove(other, active, -1)) {
 										validList->mv[validList->size++] = (struct MoveDetails) {
 											cp: piece,
 											newPos: piece->pos,
@@ -654,6 +795,13 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						movePiece(active, piece, initPos);
 					}
 
+					/*
+					 * Starting at:              | Action:
+					 * * 48 49 50 51 52 53 54 55 | Transform to B,N,Q,R
+					 * * 32 33 34 35 36 37 38 39 | Check for en passant
+					 * * ----------------------- | Nothing
+					 */
+
 					switch(piece->pos) {
 						case 48: // FALL THROUGH
 						case 49: // FALL THROUGH
@@ -663,10 +811,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						case 53: // FALL THROUGH
 						case 54: // FALL THROUGH
 						case 55:
-							if(other->pieces.pos[piece->pos + 7]) {
+							if(piece->pos != 48 && other->pieces.pos[piece->pos + 7]) {
 								movePiece(active, piece, piece->pos + 7);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -704,10 +852,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 7);
 							}
 
-							if(other->pieces.pos[piece->pos + 9]) {
+							if(piece->pos != 55 && other->pieces.pos[piece->pos + 9]) {
 								movePiece(active, piece, piece->pos + 9);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -748,10 +896,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							break;
 
 						default:
-							if(other->pieces.pos[piece->pos + 7]) {
+							if(piece->pos % 8 != 0 && other->pieces.pos[piece->pos + 7]) {
 								movePiece(active, piece, piece->pos + 7);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -765,10 +913,10 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 7);
 							}
 
-							if(other->pieces.pos[piece->pos + 9]) {
+							if(piece->pos % 8 != 7 && other->pieces.pos[piece->pos + 9]) {
 								movePiece(active, piece, piece->pos + 9);
 
-								if(getCheckStatus(other, active, piece->pos) == CP_NONE) {
+								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -794,13 +942,14 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 						case 39:
 							// En passant
 							if(
+								piece->pos != 32 &&
 								other->pieces.pos[piece->pos - 1] &&
 								other->pieces.piece[piece->pos - 1]->type == CP_PAWN &&
 								other->pieces.piece[piece->pos - 1]->jumped
 							) {
 								movePiece(active, piece, piece->pos + 7);
 
-								if(getCheckStatus(other, active, piece->pos - 8) == CP_NONE) {
+								if(validateMove(other, active, piece->pos - 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -815,13 +964,14 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							}
 
 							if(
+								piece->pos != 39 &&
 								other->pieces.pos[piece->pos + 1] &&
 								other->pieces.piece[piece->pos + 1]->type == CP_PAWN &&
 								other->pieces.piece[piece->pos + 1]->jumped
 							) {
 								movePiece(active, piece, piece->pos + 9);
 
-								if(getCheckStatus(other, active, piece->pos - 8) == CP_NONE) {
+								if(validateMove(other, active, piece->pos - 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
 										cp: piece,
 										newPos: piece->pos,
@@ -844,21 +994,21 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 			break;
 
 		case CP_QUEEN:
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][0],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][1],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][2],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][3],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][4],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][5],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][6],  validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_QUEEN][7],  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][0]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][1]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][2]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][3]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][4]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][5]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][6]),  validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_QUEEN][7]),  validList, active, other);
 			break;
 
 		case CP_ROOK:
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_ROOK][0],   validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_ROOK][2],   validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_ROOK][4],   validList, active, other);
-			findLegalOnRay(piece, &rayMoves[piece->pos][CP_ROOK][6],   validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_ROOK][0]),   validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_ROOK][2]),   validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_ROOK][4]),   validList, active, other);
+			findLegalOnRay(piece, &(rayMoves[piece->pos][CP_ROOK][6]),   validList, active, other);
 			break;
 	}
 }
@@ -868,53 +1018,58 @@ void addCastle(struct Player* active, struct Player* other) {
 
 	int8_t kingPos = active->kingPos;
 
-	if(
-		!active->rook_Q.hasMoved ||
-		inLineOfSight(kingPos, active->rook_Q.pos, active, other, true)
-	) {
-		movePiece(active, &(active->king), active->kingPos - 1);
-
-		if(getCheckStatus(other, active, -1) == CP_NONE) {
+	if(!active->rook_Q.taken) {
+		if(
+			!active->rook_Q.hasMoved &&
+			inLineOfSight(kingPos, active->rook_Q.pos, active, other, CP_ATTACKER)
+		) {
 			movePiece(active, &(active->king), active->kingPos - 1);
 
-			if(getCheckStatus(other, active, -1) == CP_NONE) {
-				active->moves.mv[active->moves.size++] = (struct MoveDetails) {
-					cp: &(active->king),
-					newPos: kingPos - 2,
-					castle: CP_CASTLE_Q,
-					jump: false,
-					enPassant: false,
-					transform: CP_NONE
-				};
+			if(validateMove(other, active, -1)) {
+				movePiece(active, &(active->king), active->kingPos - 1);
+
+				if(validateMove(other, active, -1)) {
+					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
+						cp: &(active->king),
+						newPos: kingPos - 2,
+						castle: CP_CASTLE_Q,
+						jump: false,
+						enPassant: false,
+						transform: CP_NONE
+					};
+				}
 			}
+
+			movePiece(active, &(active->king), kingPos);
 		}
 	}
 
-	movePiece(active, &(active->king), kingPos);
 
-	if(
-		!active->rook_K.hasMoved ||
-		inLineOfSight(kingPos, active->rook_K.pos, active, other, true)
-	) {
-		movePiece(active, &(active->king), active->kingPos + 1);
-
-		if(getCheckStatus(other, active, -1) == CP_NONE) {
+	if(!active->rook_K.taken) {
+		if(
+			!active->rook_K.hasMoved &&
+			inLineOfSight(kingPos, active->rook_K.pos, active, other, CP_ATTACKER)
+		) {
 			movePiece(active, &(active->king), active->kingPos + 1);
 
-			if(getCheckStatus(other, active, -1) == CP_NONE) {
-				active->moves.mv[active->moves.size++] = (struct MoveDetails) {
-					cp: &(active->king),
-					newPos: kingPos + 2,
-					castle: CP_CASTLE_K,
-					jump: false,
-					enPassant: false,
-					transform: CP_NONE
-				};
+			if(validateMove(other, active, -1)) {
+				movePiece(active, &(active->king), active->kingPos + 1);
+
+				if(validateMove(other, active, -1)) {
+					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
+						cp: &(active->king),
+						newPos: kingPos + 2,
+						castle: CP_CASTLE_K,
+						jump: false,
+						enPassant: false,
+						transform: CP_NONE
+					};
+				}
 			}
+
+			movePiece(active, &(active->king), kingPos);
 		}
 	}
-
-	movePiece(active, &(active->king), kingPos);
 }
 
 /// HEADER-DEFINED FUNCTIONS
@@ -997,24 +1152,24 @@ size_t genMoves(struct Board* board) {
 			addCastle(active, other);
 
 		case CP_SINGLE: // FALL THROUGH
-			addMoves(&active->rook_Q,   &active->moves, active, other);
-			addMoves(&active->knight_Q, &active->moves, active, other);
-			addMoves(&active->bishop_Q, &active->moves, active, other);
-			addMoves(&active->queen,    &active->moves, active, other);
-			addMoves(&active->bishop_K, &active->moves, active, other);
-			addMoves(&active->knight_K, &active->moves, active, other);
-			addMoves(&active->rook_K,   &active->moves, active, other);
-			addMoves(&active->pawn_RQ,  &active->moves, active, other);
-			addMoves(&active->pawn_NQ,  &active->moves, active, other);
-			addMoves(&active->pawn_BQ,  &active->moves, active, other);
-			addMoves(&active->pawn_Q,   &active->moves, active, other);
-			addMoves(&active->pawn_K,   &active->moves, active, other);
-			addMoves(&active->pawn_BK,  &active->moves, active, other);
-			addMoves(&active->pawn_NK,  &active->moves, active, other);
-			addMoves(&active->pawn_RK,  &active->moves, active, other);
+			addMoves(&(active->rook_Q),   &(active->moves), active, other);
+			addMoves(&(active->knight_Q), &(active->moves), active, other);
+			addMoves(&(active->bishop_Q), &(active->moves), active, other);
+			addMoves(&(active->queen),    &(active->moves), active, other);
+			addMoves(&(active->bishop_K), &(active->moves), active, other);
+			addMoves(&(active->knight_K), &(active->moves), active, other);
+			addMoves(&(active->rook_K),   &(active->moves), active, other);
+			addMoves(&(active->pawn_RQ),  &(active->moves), active, other);
+			addMoves(&(active->pawn_NQ),  &(active->moves), active, other);
+			addMoves(&(active->pawn_BQ),  &(active->moves), active, other);
+			addMoves(&(active->pawn_Q),   &(active->moves), active, other);
+			addMoves(&(active->pawn_K),   &(active->moves), active, other);
+			addMoves(&(active->pawn_BK),  &(active->moves), active, other);
+			addMoves(&(active->pawn_NK),  &(active->moves), active, other);
+			addMoves(&(active->pawn_RK),  &(active->moves), active, other);
 
 		case CP_DOUBLE:
-			addMoves(&active->king,     &active->moves, active, other);
+			addMoves(&(active->king),     &(active->moves), active, other);
 	}
 	
 	return active->moves.size;
@@ -1050,12 +1205,16 @@ void postMoveActions(struct Board* board, int8_t moveNum) {
 			// Castling cannot take pieces
 			// So only check for overlapping pieces if not castling
 			if(other->pieces.pos[mv->newPos]) {
-				other->pieces.piece[mv->newPos]->pos = -1;
-				other->pieces.pos[mv->newPos]        = false;
+				other->pieces.piece[mv->newPos]->pos   = -1;
+				other->pieces.piece[mv->newPos]->taken = true;
+				other->pieces.pos[mv->newPos]          = false;
+
 			} else if(mv->enPassant) {
 				int8_t rmPiecePos = mv->cp->color ? (mv->newPos - 8) : (mv->newPos + 8);
-				other->pieces.piece[rmPiecePos]->pos = -1;
-				other->pieces.pos[rmPiecePos]        = false;
+
+				other->pieces.piece[rmPiecePos]->pos   = -1;
+				other->pieces.piece[rmPiecePos]->taken = true;
+				other->pieces.pos[rmPiecePos]          = false;
 			}
 
 			break;
@@ -1072,7 +1231,7 @@ void postMoveActions(struct Board* board, int8_t moveNum) {
 	}
 
 	active->kingCheck = CP_NONE;
-	other->kingCheck  = getCheckStatus(active, other, -1);
+	other->kingCheck  = getCheckStatus(active, other);
 }
 
 void switchTurn(struct Board* board) {

@@ -1,8 +1,8 @@
 #!/usr/bin/python
-# This script generates chessconstants.c
+# This script generates lookups.c
 # Otherwise, writing five lookup tables would take forever
 
-# chessconstants.c is a read-only file.
+# lookups.c is a read-only file.
 # If there is an issue with any of the lookup tables,
 # please submit a pull request to fix the associated generator script.
 

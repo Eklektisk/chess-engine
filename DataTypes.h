@@ -20,6 +20,4 @@ struct Vector8 { // Vector
 	size_t size;
 };
 
-int8_t rayStep(struct Ray* ray, int8_t* index);
-
 #endif

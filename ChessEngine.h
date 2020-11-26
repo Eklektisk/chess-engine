@@ -28,34 +28,33 @@ struct MoveDetails {
 };
 
 struct CPVector {
-	struct MoveDetails mv[84];
+	struct MoveDetails mv[139];
 	size_t size;
 };
-
 
 struct Player {
 	int8_t kingPos;
 	int8_t kingCheck;
 	int8_t color;
 
-	struct ChessPiece rook_Q;
-	struct ChessPiece knight_Q;
-	struct ChessPiece bishop_Q;
-	struct ChessPiece queen;
-	struct ChessPiece king;
-	struct ChessPiece bishop_K;
-	struct ChessPiece knight_K;
-	struct ChessPiece rook_K;
-	struct ChessPiece pawn_RQ;
-	struct ChessPiece pawn_NQ;
-	struct ChessPiece pawn_BQ;
-	struct ChessPiece pawn_Q;
-	struct ChessPiece pawn_K;
-	struct ChessPiece pawn_BK;
-	struct ChessPiece pawn_NK;
-	struct ChessPiece pawn_RK;
+	struct ChessPiece rook_Q;    // 14 moves
+	struct ChessPiece knight_Q;  //  8 moves
+	struct ChessPiece bishop_Q;  // 13 moves
+	struct ChessPiece queen;     // 27 moves
+	struct ChessPiece king;      // 10 moves
+	struct ChessPiece bishop_K;  // 13 moves
+	struct ChessPiece knight_K;  //  8 moves
+	struct ChessPiece rook_K;    // 14 moves
+	struct ChessPiece pawn_RQ;   //  4 moves
+	struct ChessPiece pawn_NQ;   //  4 moves
+	struct ChessPiece pawn_BQ;   //  4 moves
+	struct ChessPiece pawn_Q;    //  4 moves
+	struct ChessPiece pawn_K;    //  4 moves
+	struct ChessPiece pawn_BK;   //  4 moves
+	struct ChessPiece pawn_NK;   //  4 moves
+	struct ChessPiece pawn_RK;   //  4 moves
 
-	struct ChessPieceMap pieces;
+	struct ChessPieceMap pieces; // 139 moves
 
 	struct CPVector moves;
 };
