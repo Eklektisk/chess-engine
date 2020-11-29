@@ -11,57 +11,63 @@
 #define OTHER_ACTION 2
 
 uint8_t handleInput(
+	WINDOW* win,
 	int8_t* selected
 ) {
 	static int8_t row = -1;
-	char key = getchar();
+	uint16_t key = wgetch(win);
 
 	switch(key) {
-		case 'h': // FALL THROUGH
+		case 27:
+		case 'q':
+		case 'Q':
+			return QUIT_GAME;
+
+		case 'H': // FALL THROUGH
+		case KEY_LEFT:
 			switch(*selected) {
 				case -1: *selected = 0;
 				default: if(*selected % 8 > 0) { *selected -= 1; } break;
 			}
 
-			return OTHER_ACTION;
+			break;
 
-		case 'l': // FALL THROUGH
+		case 'L': // FALL THROUGH
+		case KEY_RIGHT:
 			switch(*selected) {
 				case -1: *selected = 0;
 				default: if(*selected % 8 < 7) { *selected += 1; } break;
 			}
 
-			return OTHER_ACTION;
+			break;
 
-		case 'k': // FALL THROUGH
+		case 'K': // FALL THROUGH
+		case KEY_UP:
 			switch(*selected) {
 				case -1: *selected = 0;
 				default: if(*selected / 8 > 0) { *selected -= 8; } break;
 			}
 
-			return OTHER_ACTION;
+			break;
 
-		case 'j': // FALL THROUGH
+		case 'J': // FALL THROUGH
+		case KEY_DOWN:
 			switch(*selected) {
 				case -1: *selected = 0;
 				default: if(*selected / 8 < 7) { *selected += 8; } break;
 			}
 
-			return OTHER_ACTION;
+			break;
 
-		case 27:  // FALL THROUGH
-		case 'q':
-			return QUIT_GAME;
-
-		case 'A': // FALL THROUGH
-		case 'B': // FALL THROUGH
-		case 'C': // FALL THROUGH
-		case 'D': // FALL THROUGH
-		case 'E': // FALL THROUGH
-		case 'F': // FALL THROUGH
-		case 'G': // FALL THROUGH
-		case 'H':
-			row = key - 65;
+		case 'a': // FALL THROUGH
+		case 'b': // FALL THROUGH
+		case 'c': // FALL THROUGH
+		case 'd': // FALL THROUGH
+		case 'e': // FALL THROUGH
+		case 'f': // FALL THROUGH
+		case 'g': // FALL THROUGH
+		case 'h':
+			row = key - 97;
 			return SELECT_CELL;
 
 		case '1': // FALL THROUGH
@@ -83,6 +89,7 @@ uint8_t handleInput(
 			return SELECT_CELL;
 	}
 
+	row = -1;
 	return OTHER_ACTION;
 }
 
@@ -209,10 +216,10 @@ void printBoard(struct Board* board, bool* isSpaceHighlighted, int8_t selected) 
 void printStats(struct Board* board, uint16_t turn) {
 	mvaddstr(0, 48, "+--------------------------+");
 	mvaddstr(1, 48, "|                          |");
-	mvaddstr(2, 48, "|   Turn:                  |");
-	mvaddstr(3, 48, "|   Active Player:         |");
-	mvaddstr(4, 48, "|   Available Moves:       |");
-	mvaddstr(5, 48, "|   In Check:              |");
+	mvaddstr(2, 48, "|  Turn:                   |");
+	mvaddstr(3, 48, "|  Active Player:          |");
+	mvaddstr(4, 48, "|  Available Moves:        |");
+	mvaddstr(5, 48, "|  In Check:               |");
 	mvaddstr(6, 48, "|                          |");
 	mvaddstr(7, 48, "+--------------------------+");
 
@@ -225,13 +232,13 @@ void printStats(struct Board* board, uint16_t turn) {
 	
 	switch(board->turn) {
 		case CP_WHITE:
-			snprintf(movesStr, 4, "%d", board->white.moves.size);
+			snprintf(movesStr, 4, "%zu", board->white.moves.size);
 			snprintf(active,   6, "White");
 			snprintf(inCheck,   4, board->white.kingCheck == CP_NONE ? "No" : "Yes");
 			break;
 
 		case CP_BLACK:
-			snprintf(movesStr, 4, "%d", board->black.moves.size);
+			snprintf(movesStr, 4, "%zu", board->black.moves.size);
 			snprintf(active,   6, "Black");
 			snprintf(inCheck,   4, board->black.kingCheck == CP_NONE ? "No" : "Yes");
 			break;
@@ -247,7 +254,10 @@ void printStats(struct Board* board, uint16_t turn) {
 	attroff(A_BOLD);
 }
 
-void printSelection(int8_t selected) {
+void printSelection(
+	int8_t selected,
+	struct Board* board
+) {
 	mvaddstr( 8, 48, "+--------------------------+");
 	mvaddstr( 9, 48, "|                          |");
 	mvaddstr(10, 48, "|  Selected Cell:          |");
@@ -258,9 +268,17 @@ void printSelection(int8_t selected) {
 	mvaddstr(15, 48, "+--------------------------+");
 	
 	char cellStr[5];
+	char pieceType[7];
+	char pieceCol[6];
+	char movesStr[3];
 
 	if(selected == -1) {
 		snprintf(cellStr, 5, "None");
+
+		pieceType[0] = '\0';
+		pieceCol[0]  = '\0';
+		movesStr[0]  = '\0';
+
 	} else {
 		snprintf(
 			cellStr, 5,
@@ -268,21 +286,90 @@ void printSelection(int8_t selected) {
 			"ABCDEFGH"[selected % 8],
 			"12345678"[selected / 8]
 		);
+
+		struct Player* active = board->turn ? &(board->black) : &(board->white);
+		struct Player* other  = board->turn ? &(board->white) : &(board->black);
+
+		if(active->pieces.pos[selected]) {
+			struct ChessPiece* piece = active->pieces.piece[selected];
+
+			switch(piece->type) {
+				case CP_BISHOP: snprintf(pieceType, 7, "Bishop"); break;
+				case CP_KING:   snprintf(pieceType, 7, "King");   break;
+				case CP_KNIGHT: snprintf(pieceType, 7, "Knight"); break;
+				case CP_PAWN:   snprintf(pieceType, 7, "Pawn");   break;
+				case CP_QUEEN:  snprintf(pieceType, 7, "Queen");  break;
+				case CP_ROOK:   snprintf(pieceType, 7, "Rook");   break;
+			}
+
+			switch(piece->color) {
+				case CP_WHITE: snprintf(pieceCol, 6, "White"); break;
+				case CP_BLACK: snprintf(pieceCol, 6, "Black"); break;
+			}
+
+			uint8_t countMoves;
+			for(uint8_t i = 0; i < active->moves.size; ++i) {
+				if(active->moves.mv[i].cp == piece) {
+					++countMoves;
+				}
+			}
+
+			snprintf(movesStr, 4, "%d", countMoves);
+
+		} else if(other->pieces.pos[selected]) {
+			struct ChessPiece* piece = other->pieces.piece[selected];
+
+			switch(piece->type) {
+				case CP_BISHOP: snprintf(pieceType, 7, "Bishop"); break;
+				case CP_KING:   snprintf(pieceType, 7, "King");   break;
+				case CP_KNIGHT: snprintf(pieceType, 7, "Knight"); break;
+				case CP_PAWN:   snprintf(pieceType, 7, "Pawn");   break;
+				case CP_QUEEN:  snprintf(pieceType, 7, "Queen");  break;
+				case CP_ROOK:   snprintf(pieceType, 7, "Rook");   break;
+			}
+
+			switch(piece->color) {
+				case CP_WHITE: snprintf(pieceCol, 6, "White"); break;
+				case CP_BLACK: snprintf(pieceCol, 6, "Black"); break;
+			}
+
+			movesStr[0] = '0';
+			movesStr[1] = '\0';
+
+		} else {
+			pieceType[0] = '\0';
+			pieceCol[0]  = '\0';
+			movesStr[0]  = '\0';
+		}
+
 	}
 
-	mvaddstr(10, 66, cellStr);
-
-	mvaddch(  9, 48, '|');
-	mvaddch(  9, 75, '|');
-	mvaddch( 10, 48, '|');
-	mvaddch( 10, 75, '|');
-	mvaddch( 11, 48, '|');
-	mvaddch( 11, 75, '|');
-	mvaddch( 12, 48, '|');
-	mvaddch( 12, 75, '|');
+	mvaddstr(10, 68, cellStr);
+	mvaddstr(11, 68, pieceType);
+	mvaddstr(12, 68, pieceCol);
+	mvaddstr(13, 68, movesStr);
 
 	attron(A_BOLD);
 	mvaddstr( 8, 50, "SELECTION");
+	attroff(A_BOLD);
+}
+
+void printInstructions() {
+	mvaddstr(16, 48, "+--------------------------+");
+	mvaddstr(17, 48, "|                          |");
+	mvaddstr(18, 48, "|  Move using:             |");
+	mvaddstr(19, 48, "|  * Shift + H,J,K,L       |");
+	mvaddstr(20, 48, "|  * Arrow keys            |");
+	mvaddstr(21, 48, "|                          |");
+	mvaddstr(22, 48, "|  Select a cell by        |");
+	mvaddstr(23, 48, "|  typing its code         |");
+	mvaddstr(24, 48, "|                          |");
+	mvaddstr(25, 48, "|  Press q or Esc to quit  |");
+	mvaddstr(26, 48, "|                          |");
+	mvaddstr(27, 48, "+--------------------------+");
+
+	attron(A_BOLD);
+	mvaddstr(16, 50, "INSTRUCTIONS");
 	attroff(A_BOLD);
 }
 
@@ -358,9 +445,10 @@ int main(int argc, char** argv) {
 	setPiece(&game.white, &game.white.knight_K, 62, false, false);
 	setPiece(&game.white, &game.white.rook_K,   63, false, false);
 
-	initscr();
+	WINDOW* win = initscr();
 	noecho();
 	curs_set(false);
+	keypad(win, true);
 
 	if(has_colors() == false) {
 		endwin();
@@ -390,7 +478,7 @@ int main(int argc, char** argv) {
 	init_pair(11, COLOR_WHITE, COLOR_YELLOW); // White piece
 	init_pair(12, COLOR_CYAN,  COLOR_YELLOW); // Black piece
 
-	while(genMoves(&game) > 0) {
+	while(!checkStalemate(&game) && genMoves(&game) > 0) {
 		bool isSpaceHighlighted[64] = {
 			false,false,false,false,false,false,false,false,
 			false,false,false,false,false,false,false,false,
@@ -424,10 +512,7 @@ int main(int argc, char** argv) {
 			0,0,0,0,0,0,0,0,
 		};
 
-		uint8_t displayedMoves[139];
-		size_t  movesCount = 0;
-
-		int8_t selected = -1;
+		static int8_t selected = -1;
 		struct ChessPiece* highlightedPiece = NULL;
 
 		int8_t moveNum = -1;
@@ -437,11 +522,12 @@ int main(int argc, char** argv) {
 		while(moveNum == -1) {
 			printBoard(&game, isSpaceHighlighted, selected);
 			printStats(&game, turn);
-			printSelection(selected);
+			printSelection(selected, &game);
+			printInstructions();
 
 			refresh();
 
-			switch(handleInput(&selected)) {
+			switch(handleInput(win, &selected)) {
 				case QUIT_GAME:
 					goto QUIT_PROGRAM;
 

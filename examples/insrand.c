@@ -3,17 +3,6 @@
 
 #include <ChessEngine.h>
 
-char getLetter(int8_t type) {
-	switch(type) {
-		case CP_BISHOP: return 'B';
-		case CP_KING:   return 'K';
-		case CP_KNIGHT: return 'N';
-		case CP_PAWN:   return 'P';
-		case CP_QUEEN:  return 'Q';
-		case CP_ROOK:   return 'R';
-	}
-}
-
 void printMove(struct MoveDetails* move) {
 	char oldRow = "ABCDEFGH"[move->cp->pos % 8];
 	char oldCol = "12345678"[move->cp->pos / 8];
@@ -86,13 +75,11 @@ int main(int argc, char** argv) {
 
 	int turn = 0;
 
-	while(genMoves(&game) > 0) {
+	while(!checkStalemate(&game) && genMoves(&game) > 0) {
 		printf ("%3d (%s): ", turn++, game.turn ? "Black" : "White");
 
 		uint8_t moveNum = rand() % (game.turn ? game.black : game.white).moves.size;
 		struct MoveDetails* move = (game.turn ? game.black : game.white).moves.mv + moveNum;
-		uint8_t oldPos = move->cp->pos;
-		uint8_t newPos = move->newPos;
 
 		printMove(move);
 		doMove(&game, moveNum);

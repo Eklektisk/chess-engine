@@ -50,6 +50,8 @@ bool inLineOfSight(
 		case CP_BOTH:
 			return true;
 	}
+
+	return false;
 }
 
 bool canPieceCapture(
@@ -74,6 +76,8 @@ bool canPieceCapture(
 		case CP_PAWN:
 			return capturePiece[pieceOne->pos][pieceOne->type][pieceOne->color][pieceTwo->pos];
 	}
+
+	return false;
 }
 
 bool validateMove(struct Player* attacker, struct Player* defender, int8_t ignorePos) {
@@ -1116,8 +1120,7 @@ struct Board initBoard() {
 			pawn_NK:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
 			pawn_RK:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
 		},
-		turn: CP_WHITE,
-		isOver: false
+		turn: CP_WHITE
 	};
 }
 
@@ -1173,6 +1176,46 @@ size_t genMoves(struct Board* board) {
 	}
 	
 	return active->moves.size;
+}
+
+bool checkStalemate(struct Board* board) {
+	if(
+		board->white.rook_Q.taken &&
+		board->white.knight_Q.taken &&
+		board->white.bishop_Q.taken &&
+		board->white.queen.taken &&
+		board->white.bishop_K.taken &&
+		board->white.knight_K.taken &&
+		board->white.rook_K.taken &&
+		board->white.pawn_RQ.taken &&
+		board->white.pawn_NQ.taken &&
+		board->white.pawn_BQ.taken &&
+		board->white.pawn_Q.taken &&
+		board->white.pawn_K.taken &&
+		board->white.pawn_BK.taken &&
+		board->white.pawn_NK.taken &&
+		board->white.pawn_RK.taken
+	) { return true; }
+
+	if(
+		board->black.rook_Q.taken &&
+		board->black.knight_Q.taken &&
+		board->black.bishop_Q.taken &&
+		board->black.queen.taken &&
+		board->black.bishop_K.taken &&
+		board->black.knight_K.taken &&
+		board->black.rook_K.taken &&
+		board->black.pawn_RQ.taken &&
+		board->black.pawn_NQ.taken &&
+		board->black.pawn_BQ.taken &&
+		board->black.pawn_Q.taken &&
+		board->black.pawn_K.taken &&
+		board->black.pawn_BK.taken &&
+		board->black.pawn_NK.taken &&
+		board->black.pawn_RK.taken
+	) { return true; }
+
+	return false;
 }
 
 void doMove(struct Board* board, int8_t moveNum) {

@@ -12,6 +12,8 @@ char getLetter(int8_t type) {
 		case CP_QUEEN:  return 'Q';
 		case CP_ROOK:   return 'R';
 	}
+
+	return '?';
 }
 
 void printMove(struct MoveDetails* move) {
@@ -154,9 +156,9 @@ int main(int argc, char** argv) {
 
 	int turn = 0;
 
-	while(!game.isOver && genMoves(&game) > 0) {
+	while(!checkStalemate(&game) && genMoves(&game) > 0) {
 		printf("Turn %d - %s\n", turn++, game.turn ? "Black" : "White");
-		printf("%d moves available\n", (game.turn ? game.black : game.white).moves.size);
+		printf("%zu moves available\n", (game.turn ? game.black : game.white).moves.size);
 
 		switch((game.turn ? game.black : game.white).kingCheck) {
 			case CP_NONE:   printf("Not in check\n"); break;
@@ -180,7 +182,6 @@ int main(int argc, char** argv) {
 
 	printf("GAME OVER\n");
 	printf("Turn %d - %s\n", turn++, game.turn ? "Black" : "White");
-	printf("%d moves available\n", (game.turn ? game.black : game.white).moves.size);
 	switch((game.turn ? game.black : game.white).kingCheck) {
 		case CP_NONE:   printf("Not in check\n"); break;
 		case CP_SINGLE: printf("In check (S)\n"); break;

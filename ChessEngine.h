@@ -64,7 +64,8 @@ struct Board {
 	struct Player black;
 
 	uint8_t turn;
-	bool isOver;
+	// TODO: Use isOver boolean to note when the game is over
+	// May need to modify interface to do so
 };
 
 struct Board initBoard();
@@ -76,6 +77,7 @@ void setPiece(
 	bool jumped
 );
 size_t genMoves(struct Board* board);
+bool checkStalemate(struct Board* board);
 void doMove(struct Board* board, int8_t moveNum);
 void postMoveActions(struct Board* board, int8_t moveNum);
 void switchTurn(struct Board* board);

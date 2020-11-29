@@ -4,22 +4,25 @@ TARGET = libchessengine
 SRC = chessengine.c lookups.c
 OBJECTS = $(SRC:%.c=%.o)
 
-all: $(TARGET).so
+all: shared static
 
 generate:
 	-@python generator/gen.py
 
 %.o: %.c
-	$(CC) $(CFLAGS) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -Wall -fPIC -c $< -o $@
 
-$(TARGET).so: $(OBJECTS)
-	$(CC) $(CFLAGS) -shared $^ -o $(TARGET).so
+shared: $(OBJECTS)
+	$(CC) $(CFLAGS) -Wall -shared $^ -o $(TARGET).so
 
-.PHONY: all clean generate debug
+static: $(OBJECTS)
+	ar rcs $(TARGET).a $^
+
+.PHONY: all clean generate debug shared static
 
 debug: CFLAGS += -DDEBUG -g
 debug: all
 
 clean:
 	-@rm -vf *.o
-	-@rm -vf $(TARGET)
+	-@rm -vf $(TARGET).so $(TARGET).a
