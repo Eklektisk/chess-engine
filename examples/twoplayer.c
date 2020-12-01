@@ -230,7 +230,7 @@ void printStats(struct Board* board, uint16_t turn) {
 
 	snprintf(turnStr,  6, "%d", turn);
 	
-	switch(board->turn) {
+	switch(board->active) {
 		case CP_WHITE:
 			snprintf(movesStr, 4, "%zu", board->white.moves.size);
 			snprintf(active,   6, "White");
@@ -287,8 +287,8 @@ void printSelection(
 			"12345678"[selected / 8]
 		);
 
-		struct Player* active = board->turn ? &(board->black) : &(board->white);
-		struct Player* other  = board->turn ? &(board->white) : &(board->black);
+		struct Player* active = board->active ? &(board->black) : &(board->white);
+		struct Player* other  = board->active ? &(board->white) : &(board->black);
 
 		if(active->pieces.pos[selected]) {
 			struct ChessPiece* piece = active->pieces.piece[selected];
@@ -408,42 +408,10 @@ uint8_t handlePawnEnd(uint8_t firstMove) {
 }
 
 int main(int argc, char** argv) {
-	struct Board game = initBoard();
+	struct Board game;
+	initBoard(&game);
+
 	uint16_t turn = 0;
-
-	setPiece(&game.black, &game.black.rook_Q,    0, false, false);
-	setPiece(&game.black, &game.black.knight_Q,  1, false, false);
-	setPiece(&game.black, &game.black.bishop_Q,  2, false, false);
-	setPiece(&game.black, &game.black.queen,     3, false, false);
-	setPiece(&game.black, &game.black.king,      4, false, false);
-	setPiece(&game.black, &game.black.bishop_K,  5, false, false);
-	setPiece(&game.black, &game.black.knight_K,  6, false, false);
-	setPiece(&game.black, &game.black.rook_K,    7, false, false);
-	setPiece(&game.black, &game.black.pawn_RQ,   8, false, false);
-	setPiece(&game.black, &game.black.pawn_NQ,   9, false, false);
-	setPiece(&game.black, &game.black.pawn_BQ,  10, false, false);
-	setPiece(&game.black, &game.black.pawn_Q,   11, false, false);
-	setPiece(&game.black, &game.black.pawn_K,   12, false, false);
-	setPiece(&game.black, &game.black.pawn_BK,  13, false, false);
-	setPiece(&game.black, &game.black.pawn_NK,  14, false, false);
-	setPiece(&game.black, &game.black.pawn_RK,  15, false, false);
-
-	setPiece(&game.white, &game.white.pawn_RQ,  48, false, false);
-	setPiece(&game.white, &game.white.pawn_NQ,  49, false, false);
-	setPiece(&game.white, &game.white.pawn_BQ,  50, false, false);
-	setPiece(&game.white, &game.white.pawn_Q,   51, false, false);
-	setPiece(&game.white, &game.white.pawn_K,   52, false, false);
-	setPiece(&game.white, &game.white.pawn_BK,  53, false, false);
-	setPiece(&game.white, &game.white.pawn_NK,  54, false, false);
-	setPiece(&game.white, &game.white.pawn_RK,  55, false, false);
-	setPiece(&game.white, &game.white.rook_Q,   56, false, false);
-	setPiece(&game.white, &game.white.knight_Q, 57, false, false);
-	setPiece(&game.white, &game.white.bishop_Q, 58, false, false);
-	setPiece(&game.white, &game.white.queen,    59, false, false);
-	setPiece(&game.white, &game.white.king,     60, false, false);
-	setPiece(&game.white, &game.white.bishop_K, 61, false, false);
-	setPiece(&game.white, &game.white.knight_K, 62, false, false);
-	setPiece(&game.white, &game.white.rook_K,   63, false, false);
 
 	WINDOW* win = initscr();
 	noecho();
@@ -517,7 +485,7 @@ int main(int argc, char** argv) {
 
 		int8_t moveNum = -1;
 
-		struct Player* player = game.turn ? &game.black : &game.white;
+		struct Player* player = game.active ? &game.black : &game.white;
 
 		while(moveNum == -1) {
 			printBoard(&game, isSpaceHighlighted, selected);

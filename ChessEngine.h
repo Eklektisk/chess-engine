@@ -60,24 +60,22 @@ struct Player {
 };
 
 struct Board {
+	// TODO: Use isOver boolean to note when the game is over
+	// May need to modify interface to do so
+
 	struct Player white;
 	struct Player black;
 
-	uint8_t turn;
-	// TODO: Use isOver boolean to note when the game is over
-	// May need to modify interface to do so
+	uint8_t active; // Stores active player
 };
 
-struct Board initBoard();
-void setPiece(
-	struct Player* player,
-	struct ChessPiece* piece,
-	int8_t pos,
-	bool hasMoved,
-	bool jumped
-);
-size_t genMoves(struct Board* board);
+void setPieceType(struct ChessPiece* piece, int8_t type);
+void setPiecePos(struct Player* player, struct ChessPiece* piece, int8_t pos);
+void setPieceFlags(struct ChessPiece* piece, bool hasMoved, bool jumped);
+
+void initBoard(struct Board* board);
 bool checkStalemate(struct Board* board);
+size_t genMoves(struct Board* board);
 void doMove(struct Board* board, int8_t moveNum);
 void postMoveActions(struct Board* board, int8_t moveNum);
 void switchTurn(struct Board* board);

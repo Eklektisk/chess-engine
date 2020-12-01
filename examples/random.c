@@ -115,41 +115,8 @@ int main(int argc, char** argv) {
 		printf("Using seed 0\n");
 	}
 
-	struct Board game = initBoard();
-
-	setPiece(&game.black, &game.black.rook_Q,    0, false, false);
-	setPiece(&game.black, &game.black.knight_Q,  1, false, false);
-	setPiece(&game.black, &game.black.bishop_Q,  2, false, false);
-	setPiece(&game.black, &game.black.queen,     3, false, false);
-	setPiece(&game.black, &game.black.king,      4, false, false);
-	setPiece(&game.black, &game.black.bishop_K,  5, false, false);
-	setPiece(&game.black, &game.black.knight_K,  6, false, false);
-	setPiece(&game.black, &game.black.rook_K,    7, false, false);
-	setPiece(&game.black, &game.black.pawn_RQ,   8, false, false);
-	setPiece(&game.black, &game.black.pawn_NQ,   9, false, false);
-	setPiece(&game.black, &game.black.pawn_BQ,  10, false, false);
-	setPiece(&game.black, &game.black.pawn_Q,   11, false, false);
-	setPiece(&game.black, &game.black.pawn_K,   12, false, false);
-	setPiece(&game.black, &game.black.pawn_BK,  13, false, false);
-	setPiece(&game.black, &game.black.pawn_NK,  14, false, false);
-	setPiece(&game.black, &game.black.pawn_RK,  15, false, false);
-
-	setPiece(&game.white, &game.white.pawn_RQ,  48, false, false);
-	setPiece(&game.white, &game.white.pawn_NQ,  49, false, false);
-	setPiece(&game.white, &game.white.pawn_BQ,  50, false, false);
-	setPiece(&game.white, &game.white.pawn_Q,   51, false, false);
-	setPiece(&game.white, &game.white.pawn_K,   52, false, false);
-	setPiece(&game.white, &game.white.pawn_BK,  53, false, false);
-	setPiece(&game.white, &game.white.pawn_NK,  54, false, false);
-	setPiece(&game.white, &game.white.pawn_RK,  55, false, false);
-	setPiece(&game.white, &game.white.rook_Q,   56, false, false);
-	setPiece(&game.white, &game.white.knight_Q, 57, false, false);
-	setPiece(&game.white, &game.white.bishop_Q, 58, false, false);
-	setPiece(&game.white, &game.white.queen,    59, false, false);
-	setPiece(&game.white, &game.white.king,     60, false, false);
-	setPiece(&game.white, &game.white.bishop_K, 61, false, false);
-	setPiece(&game.white, &game.white.knight_K, 62, false, false);
-	setPiece(&game.white, &game.white.rook_K,   63, false, false);
+	struct Board game;
+	initBoard(&game);
 
 	printBoard(&game, -1, -1);
 	getchar();
@@ -157,17 +124,17 @@ int main(int argc, char** argv) {
 	int turn = 0;
 
 	while(!checkStalemate(&game) && genMoves(&game) > 0) {
-		printf("Turn %d - %s\n", turn++, game.turn ? "Black" : "White");
-		printf("%zu moves available\n", (game.turn ? game.black : game.white).moves.size);
+		printf("Turn %d - %s\n", turn++, game.active ? "Black" : "White");
+		printf("%zu moves available\n", (game.active ? game.black : game.white).moves.size);
 
-		switch((game.turn ? game.black : game.white).kingCheck) {
+		switch((game.active ? game.black : game.white).kingCheck) {
 			case CP_NONE:   printf("Not in check\n"); break;
 			case CP_SINGLE: printf("In check (S)\n"); break;
 			case CP_DOUBLE: printf("In check (D)\n"); break;
 		}
 
-		uint8_t moveNum = rand() % (game.turn ? game.black : game.white).moves.size;
-		struct MoveDetails* move = (game.turn ? game.black : game.white).moves.mv + moveNum;
+		uint8_t moveNum = rand() % (game.active ? game.black : game.white).moves.size;
+		struct MoveDetails* move = (game.active ? game.black : game.white).moves.mv + moveNum;
 		uint8_t oldPos = move->cp->pos;
 		uint8_t newPos = move->newPos;
 
@@ -181,8 +148,8 @@ int main(int argc, char** argv) {
 	}
 
 	printf("GAME OVER\n");
-	printf("Turn %d - %s\n", turn++, game.turn ? "Black" : "White");
-	switch((game.turn ? game.black : game.white).kingCheck) {
+	printf("Turn %d - %s\n", turn++, game.active ? "Black" : "White");
+	switch((game.active ? game.black : game.white).kingCheck) {
 		case CP_NONE:   printf("Not in check\n"); break;
 		case CP_SINGLE: printf("In check (S)\n"); break;
 		case CP_DOUBLE: printf("In check (D)\n"); break;

@@ -1077,76 +1077,115 @@ void addCastle(struct Player* active, struct Player* other) {
 }
 
 /// HEADER-DEFINED FUNCTIONS
-
-struct Board initBoard() {
-	return (struct Board) {
-		white: (struct Player) {
-			color: CP_WHITE,
-			kingCheck: CP_NONE,
-			rook_Q:   { color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			knight_Q: { color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			bishop_Q: { color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			queen:    { color: CP_WHITE, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
-			king:     { color: CP_WHITE, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
-			bishop_K: { color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			knight_K: { color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			rook_K:   { color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			pawn_RQ:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NQ:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BQ:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_Q:   { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_K:   { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BK:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NK:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_RK:  { color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-		},
-		black: (struct Player) {
-			color: CP_BLACK,
-			kingCheck: CP_NONE,
-			rook_Q:   { color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			knight_Q: { color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			bishop_Q: { color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			queen:    { color: CP_BLACK, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
-			king:     { color: CP_BLACK, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
-			bishop_K: { color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			knight_K: { color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			rook_K:   { color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			pawn_RQ:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NQ:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BQ:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_Q:   { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_K:   { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BK:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NK:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_RK:  { color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-		},
-		turn: CP_WHITE
-	};
+void setPieceType(struct ChessPiece* piece, int8_t type) {
+	piece->type = type;
 }
 
-void setPiece(
-	struct Player* player,
-	struct ChessPiece* piece,
-	int8_t pos,
-	bool hasMoved,
-	bool jumped
-) {
+void setPiecePos(struct Player* player, struct ChessPiece* piece, int8_t pos) {
+	if(piece->pos >= 0 && piece->pos < 64) {
+		player->pieces.pos[piece->pos] = false;
+	}
+
 	player->pieces.pos[pos]     = true;
 	player->pieces.piece[pos]   = piece;
 
-	piece->pos = pos;
+	piece->pos  = pos;
 
 	if(piece->type == CP_KING) {
 		player->kingPos = pos;
 	}
+}
 
+void setPieceFlags(struct ChessPiece* piece, bool hasMoved, bool jumped) {
 	piece->hasMoved = hasMoved;
 	piece->jumped   = jumped;
 }
 
+void initBoard(struct Board* board) {
+	*board = (struct Board) {
+		white: (struct Player) {
+			color: CP_WHITE,
+			kingCheck: CP_NONE,
+			kingPos: 60,
+			rook_Q:   { pos: 56, color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
+			knight_Q: { pos: 57, color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
+			bishop_Q: { pos: 58, color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
+			queen:    { pos: 59, color: CP_WHITE, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
+			king:     { pos: 60, color: CP_WHITE, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
+			bishop_K: { pos: 61, color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
+			knight_K: { pos: 62, color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
+			rook_K:   { pos: 63, color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
+			pawn_RQ:  { pos: 48, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_NQ:  { pos: 49, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_BQ:  { pos: 50, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_Q:   { pos: 51, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_K:   { pos: 52, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_BK:  { pos: 53, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_NK:  { pos: 54, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_RK:  { pos: 55, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+		},
+		black: (struct Player) {
+			color: CP_BLACK,
+			kingCheck: CP_NONE,
+			kingPos: 4,
+			rook_Q:   { pos:  0, color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
+			knight_Q: { pos:  1, color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
+			bishop_Q: { pos:  2, color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
+			queen:    { pos:  3, color: CP_BLACK, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
+			king:     { pos:  4, color: CP_BLACK, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
+			bishop_K: { pos:  5, color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
+			knight_K: { pos:  6, color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
+			rook_K:   { pos:  7, color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
+			pawn_RQ:  { pos:  8, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_NQ:  { pos:  9, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_BQ:  { pos: 10, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_Q:   { pos: 11, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_K:   { pos: 12, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_BK:  { pos: 13, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_NK:  { pos: 14, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+			pawn_RK:  { pos: 15, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+		},
+		active: CP_WHITE
+	};
+
+	board->white.pieces.pos[56] = true; board->white.pieces.piece[56] = &(board->white.rook_Q);
+	board->white.pieces.pos[57] = true; board->white.pieces.piece[57] = &(board->white.knight_Q);
+	board->white.pieces.pos[58] = true; board->white.pieces.piece[58] = &(board->white.bishop_Q);
+	board->white.pieces.pos[59] = true; board->white.pieces.piece[59] = &(board->white.queen);
+	board->white.pieces.pos[60] = true; board->white.pieces.piece[60] = &(board->white.king);
+	board->white.pieces.pos[61] = true; board->white.pieces.piece[61] = &(board->white.bishop_K);
+	board->white.pieces.pos[62] = true; board->white.pieces.piece[62] = &(board->white.knight_K);
+	board->white.pieces.pos[63] = true; board->white.pieces.piece[63] = &(board->white.rook_K);
+	board->white.pieces.pos[48] = true; board->white.pieces.piece[48] = &(board->white.pawn_RQ);
+	board->white.pieces.pos[49] = true; board->white.pieces.piece[49] = &(board->white.pawn_NQ);
+	board->white.pieces.pos[50] = true; board->white.pieces.piece[50] = &(board->white.pawn_BQ);
+	board->white.pieces.pos[51] = true; board->white.pieces.piece[51] = &(board->white.pawn_Q);
+	board->white.pieces.pos[52] = true; board->white.pieces.piece[52] = &(board->white.pawn_K);
+	board->white.pieces.pos[53] = true; board->white.pieces.piece[53] = &(board->white.pawn_BK);
+	board->white.pieces.pos[54] = true; board->white.pieces.piece[54] = &(board->white.pawn_NK);
+	board->white.pieces.pos[55] = true; board->white.pieces.piece[55] = &(board->white.pawn_RK);
+
+	board->black.pieces.pos[ 0] = true; board->black.pieces.piece[ 0] = &(board->black.rook_Q);
+	board->black.pieces.pos[ 1] = true; board->black.pieces.piece[ 1] = &(board->black.knight_Q);
+	board->black.pieces.pos[ 2] = true; board->black.pieces.piece[ 2] = &(board->black.bishop_Q);
+	board->black.pieces.pos[ 3] = true; board->black.pieces.piece[ 3] = &(board->black.queen);
+	board->black.pieces.pos[ 4] = true; board->black.pieces.piece[ 4] = &(board->black.king);
+	board->black.pieces.pos[ 5] = true; board->black.pieces.piece[ 5] = &(board->black.bishop_K);
+	board->black.pieces.pos[ 6] = true; board->black.pieces.piece[ 6] = &(board->black.knight_K);
+	board->black.pieces.pos[ 7] = true; board->black.pieces.piece[ 7] = &(board->black.rook_K);
+	board->black.pieces.pos[ 8] = true; board->black.pieces.piece[ 8] = &(board->black.pawn_RQ);
+	board->black.pieces.pos[ 9] = true; board->black.pieces.piece[ 9] = &(board->black.pawn_NQ);
+	board->black.pieces.pos[10] = true; board->black.pieces.piece[10] = &(board->black.pawn_BQ);
+	board->black.pieces.pos[11] = true; board->black.pieces.piece[11] = &(board->black.pawn_Q);
+	board->black.pieces.pos[12] = true; board->black.pieces.piece[12] = &(board->black.pawn_K);
+	board->black.pieces.pos[13] = true; board->black.pieces.piece[13] = &(board->black.pawn_BK);
+	board->black.pieces.pos[14] = true; board->black.pieces.piece[14] = &(board->black.pawn_NK);
+	board->black.pieces.pos[15] = true; board->black.pieces.piece[15] = &(board->black.pawn_RK);
+}
+
 size_t genMoves(struct Board* board) {
-	struct Player* active = board->turn ? &board->black : &board->white;
-	struct Player* other  = board->turn ? &board->white : &board->black;
+	struct Player* active = board->active ? &board->black : &board->white;
+	struct Player* other  = board->active ? &board->white : &board->black;
 
 	active->moves.size = 0;
 
@@ -1219,7 +1258,7 @@ bool checkStalemate(struct Board* board) {
 }
 
 void doMove(struct Board* board, int8_t moveNum) {
-	struct Player* player  = board->turn ? &board->black : &board->white;
+	struct Player* player  = board->active ? &board->black : &board->white;
 	struct MoveDetails* mv = player->moves.mv + moveNum;
 
 	player->pieces.pos[mv->cp->pos]  = false;
@@ -1234,8 +1273,8 @@ void doMove(struct Board* board, int8_t moveNum) {
 }
 
 void postMoveActions(struct Board* board, int8_t moveNum) {
-	struct Player* active = board->turn ? &board->black : &board->white;
-	struct Player* other  = board->turn ? &board->white : &board->black;
+	struct Player* active = board->active ? &board->black : &board->white;
+	struct Player* other  = board->active ? &board->white : &board->black;
 
 	struct MoveDetails* mv = active->moves.mv + moveNum;
 
@@ -1263,12 +1302,12 @@ void postMoveActions(struct Board* board, int8_t moveNum) {
 			break;
 
 		case CP_CASTLE_Q:
-			movePiece(active, &(active->rook_Q), board->turn ? 3: 59);
+			movePiece(active, &(active->rook_Q), board->active ? 3 : 59);
 			active->rook_Q.hasMoved = true;
 			break;
 
 		case CP_CASTLE_K:
-			movePiece(active, &(active->rook_K), board->turn ? 5: 61);
+			movePiece(active, &(active->rook_K), board->active ? 5 : 61);
 			active->rook_K.hasMoved = true;
 			break;
 	}
@@ -1278,6 +1317,6 @@ void postMoveActions(struct Board* board, int8_t moveNum) {
 }
 
 void switchTurn(struct Board* board) {
-	board->turn = board->turn ? CP_WHITE : CP_BLACK;
+	board->active = board->active ? CP_WHITE : CP_BLACK;
 }
 
