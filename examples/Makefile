@@ -1,19 +1,13 @@
 all: random insrand twoplayer
 
 random: random.c
-	gcc -Wall -std=c99 random.c -L.. -lchessengine -I.. -o random
-	echo 'LD_LIBRARY_PATH=.. ./random $$@' > random.sh
-	chmod 755 random.sh
+	gcc -Wall -std=c99 random.c -L.. -static -lchessengine -I.. -o random
 
 insrand: insrand.c
-	gcc -Wall -std=c99 insrand.c -L.. -lchessengine -I.. -o insrand
-	echo 'LD_LIBRARY_PATH=.. ./insrand $$@' > insrand.sh
-	chmod 755 insrand.sh
+	gcc -Wall -std=c99 insrand.c -L.. -static -lchessengine -I.. -o insrand
 
 twoplayer: twoplayer.c
-	gcc -Wall -std=c99 twoplayer.c -L.. -lchessengine -lncurses -I.. -o twoplayer
-	echo 'LD_LIBRARY_PATH=.. ./twoplayer $$@' > twoplayer.sh
-	chmod 755 twoplayer.sh
+	gcc -Wall -std=c99 twoplayer.c ../libchessengine.a -lncurses -I.. -o twoplayer
 
 clean: clean-random clean-twoplayer clean-insrand
 

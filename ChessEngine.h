@@ -1,6 +1,10 @@
 #ifndef CHESS_ENGINE_H
 #define CHESS_ENGINE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "DataTypes.h"
 #include "Constants.h"
 
@@ -79,5 +83,9 @@ size_t genMoves(struct Board* board);
 void doMove(struct Board* board, int8_t moveNum);
 void postMoveActions(struct Board* board, int8_t moveNum);
 void switchTurn(struct Board* board);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

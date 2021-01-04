@@ -76,9 +76,9 @@ make all
 ```
 
 This produces three files:
-* `random.sh` shows a game where the computer makes random moves until the game is over.
-* `insrand.sh` reproduces a random game similar to random.sh, but only displays instructions.
-* `twoplayer.sh` creates an ncurses interface for two players to play chess.
+* `random` shows a game where the computer makes random moves until the game is over.
+* `insrand` reproduces a random game similar to random, but only displays instructions.
+* `twoplayer` creates an ncurses interface for two players to play chess.
 
 ### Including ###
 This can be included as a shared/static library or directly from source code.
