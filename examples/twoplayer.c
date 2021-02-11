@@ -18,7 +18,6 @@ uint8_t handleInput(
 	uint16_t key = wgetch(win);
 
 	switch(key) {
-		case 27:
 		case 'q':
 		case 'Q':
 			return QUIT_GAME;
@@ -364,7 +363,7 @@ void printInstructions() {
 	mvaddstr(22, 48, "|  Select a cell by        |");
 	mvaddstr(23, 48, "|  typing its code         |");
 	mvaddstr(24, 48, "|                          |");
-	mvaddstr(25, 48, "|  Press q or Esc to quit  |");
+	mvaddstr(25, 48, "|  Press q to quit         |");
 	mvaddstr(26, 48, "|                          |");
 	mvaddstr(27, 48, "+--------------------------+");
 
