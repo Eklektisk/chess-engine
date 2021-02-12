@@ -98,7 +98,7 @@ def format(all_rays):
     formattedOne += '}'
     formattedTwo += '}'
 
-    varOne = 'struct Ray allRays[64][8]'
+    varOne = 'Ray allRays[64][8]'
     varTwo = 'int8_t rayContains[64][64]'
 
     return f'{varOne} = {formattedOne};\n\n{varTwo} = {formattedTwo};'

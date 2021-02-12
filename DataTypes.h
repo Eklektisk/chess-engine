@@ -5,19 +5,19 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-struct Vector { // Vector
+typedef struct Vector { // Vector
 	int8_t* pos;
 	size_t  size;
-};
+} Vector;
 
-struct Ray { // Vector
+typedef struct Ray { // Vector
 	int8_t pos[7];
 	size_t size;
-};
+} Ray;
 
-struct Vector8 { // Vector
+typedef struct Vector8 { // Vector
 	int8_t pos[8];
 	size_t size;
-};
+} Vector8;
 
 #endif

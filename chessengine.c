@@ -7,7 +7,7 @@
 #define CP_BOTH     2
 /**************************/
 
-void movePiece(struct Player* player, struct ChessPiece* piece, int8_t newPos) {
+void movePiece(Player* player, ChessPiece* piece, int8_t newPos) {
 	player->pieces.pos[piece->pos] = false;
 	player->pieces.pos[newPos]     = true;
 	player->pieces.piece[newPos]   = piece;
@@ -22,8 +22,8 @@ void movePiece(struct Player* player, struct ChessPiece* piece, int8_t newPos) {
 bool inLineOfSight(
 	int8_t start,
 	int8_t end,
-	struct Player* attacker,
-	struct Player* defender,
+	Player* attacker,
+	Player* defender,
 	int8_t condition
 ) {
 	int8_t selRay = rayContains[start][end];
@@ -55,10 +55,10 @@ bool inLineOfSight(
 }
 
 bool canPieceCapture(
-	struct ChessPiece* pieceOne,
-	struct ChessPiece* pieceTwo,
-	struct Player* attacker,
-	struct Player* defender
+	ChessPiece* pieceOne,
+	ChessPiece* pieceTwo,
+	Player* attacker,
+	Player* defender
 ) {
 	if(pieceOne->color == pieceTwo->color) { return false; }
 
@@ -80,7 +80,7 @@ bool canPieceCapture(
 	return false;
 }
 
-bool validateMove(struct Player* attacker, struct Player* defender, int8_t ignorePos) {
+bool validateMove(Player* attacker, Player* defender, int8_t ignorePos) {
 	if(!(attacker->rook_Q.taken || attacker->rook_Q.pos == ignorePos)) {
 		if(canPieceCapture(&(attacker->rook_Q),   &(defender->king), attacker, defender)) {
 			return false;
@@ -180,7 +180,7 @@ bool validateMove(struct Player* attacker, struct Player* defender, int8_t ignor
 	return true;
 }
 
-int8_t getCheckStatus(struct Player* attacker, struct Player* defender) {
+int8_t getCheckStatus(Player* attacker, Player* defender) {
 	int8_t checkStatus = CP_NONE;
 
 	if(!attacker->rook_Q.taken) {
@@ -315,11 +315,11 @@ int8_t getCheckStatus(struct Player* attacker, struct Player* defender) {
 }
 
 void findLegalOnRay(
-	struct ChessPiece* piece,
-	struct Ray* moveList,
-	struct CPVector* validList,
-	struct Player* active,
-	struct Player* other
+	ChessPiece* piece,
+	Ray* moveList,
+	CPVector* validList,
+	Player* active,
+	Player* other
 ) {
 	const int8_t initPos = piece->pos;
 
@@ -329,7 +329,7 @@ void findLegalOnRay(
 		movePiece(active, piece, moveList->pos[i]);
 
 		if(validateMove(other, active, moveList->pos[i])) {
-			validList->mv[(validList->size)++] = (struct MoveDetails) {
+			validList->mv[(validList->size)++] = (MoveDetails) {
 				.cp        = piece,
 				.newPos    = moveList->pos[i],
 				.castle    = CP_NONE,
@@ -346,11 +346,11 @@ void findLegalOnRay(
 }
 
 void findLegalMoves(
-	struct ChessPiece* piece,
-	struct Vector8* moveList,
-	struct CPVector* validList,
-	struct Player* active,
-	struct Player* other
+	ChessPiece* piece,
+	Vector8* moveList,
+	CPVector* validList,
+	Player* active,
+	Player* other
 ) {
 	const int8_t initPos = piece->pos;
 
@@ -360,7 +360,7 @@ void findLegalMoves(
 		movePiece(active, piece, moveList->pos[i]);
 
 		if(validateMove(other, active, moveList->pos[i])) {
-			validList->mv[(validList->size)++] = (struct MoveDetails) {
+			validList->mv[(validList->size)++] = (MoveDetails) {
 				.cp       = piece,
 				.newPos    = moveList->pos[i],
 				.castle    = CP_NONE,
@@ -374,7 +374,7 @@ void findLegalMoves(
 	movePiece(active, piece, initPos);
 }
 
-void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Player* active, struct Player* other) {
+void addMoves(ChessPiece* piece, CPVector* validList, Player* active, Player* other) {
 	if(piece->taken) { return; }
 
 	switch(piece->type) {
@@ -417,7 +417,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 6: // FALL THROUGH
 							case 7:
 								if(validateMove(other, active, -1)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -425,7 +425,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -433,7 +433,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -441,7 +441,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -455,7 +455,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 							default: // FALL THROUGH
 								if(validateMove(other, active, -1)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -483,7 +483,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 									movePiece(active, piece, piece->pos - 8);
 
 									if(validateMove(other, active, -1)) {
-										validList->mv[validList->size++] = (struct MoveDetails) {
+										validList->mv[validList->size++] = (MoveDetails) {
 											.cp        = piece,
 											.newPos    = piece->pos,
 											.castle    = CP_NONE,
@@ -520,7 +520,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 7);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -528,7 +528,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -536,7 +536,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -544,7 +544,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -561,7 +561,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 9);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -569,7 +569,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -577,7 +577,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -585,7 +585,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -605,7 +605,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 7);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -622,7 +622,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 9);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -654,7 +654,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 7);
 
 								if(validateMove(other, active, piece->pos + 8)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -676,7 +676,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos - 9);
 
 								if(validateMove(other, active, piece->pos + 8)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -716,7 +716,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 57: // FALL THROUGH
 							case 56:
 								if(validateMove(other, active, -1)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -724,7 +724,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -732,7 +732,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -740,7 +740,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -754,7 +754,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 							default: // FALL THROUGH
 								if(validateMove(other, active, -1)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -782,7 +782,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 									movePiece(active, piece, piece->pos + 8);
 
 									if(validateMove(other, active, -1)) {
-										validList->mv[validList->size++] = (struct MoveDetails) {
+										validList->mv[validList->size++] = (MoveDetails) {
 											.cp        = piece,
 											.newPos    = piece->pos,
 											.castle    = CP_NONE,
@@ -819,7 +819,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 7);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -827,7 +827,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -835,7 +835,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -843,7 +843,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -860,7 +860,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 9);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -868,7 +868,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_BISHOP
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -876,7 +876,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_KNIGHT
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -884,7 +884,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 										.enPassant = false,
 										.transform = CP_QUEEN
 									};
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -904,7 +904,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 7);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -921,7 +921,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 9);
 
 								if(validateMove(other, active, piece->pos)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -954,7 +954,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 7);
 
 								if(validateMove(other, active, piece->pos - 8)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -976,7 +976,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 								movePiece(active, piece, piece->pos + 9);
 
 								if(validateMove(other, active, piece->pos - 8)) {
-									validList->mv[validList->size++] = (struct MoveDetails) {
+									validList->mv[validList->size++] = (MoveDetails) {
 										.cp        = piece,
 										.newPos    = piece->pos,
 										.castle    = CP_NONE,
@@ -1017,7 +1017,7 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 	}
 }
 
-void addCastle(struct Player* active, struct Player* other) {
+void addCastle(Player* active, Player* other) {
 	if(active->king.hasMoved) { return; }
 
 	int8_t kingPos = active->kingPos;
@@ -1033,7 +1033,7 @@ void addCastle(struct Player* active, struct Player* other) {
 				movePiece(active, &(active->king), active->kingPos - 1);
 
 				if(validateMove(other, active, -1)) {
-					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
+					active->moves.mv[active->moves.size++] = (MoveDetails) {
 						.cp        = &(active->king),
 						.newPos    = kingPos - 2,
 						.castle    = CP_CASTLE_Q,
@@ -1060,7 +1060,7 @@ void addCastle(struct Player* active, struct Player* other) {
 				movePiece(active, &(active->king), active->kingPos + 1);
 
 				if(validateMove(other, active, -1)) {
-					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
+					active->moves.mv[active->moves.size++] = (MoveDetails) {
 						.cp        = &(active->king),
 						.newPos    = kingPos + 2,
 						.castle    = CP_CASTLE_K,
@@ -1077,11 +1077,11 @@ void addCastle(struct Player* active, struct Player* other) {
 }
 
 /// HEADER-DEFINED FUNCTIONS
-void setPieceType(struct ChessPiece* piece, int8_t type) {
+void setPieceType(ChessPiece* piece, int8_t type) {
 	piece->type = type;
 }
 
-void setPiecePos(struct Player* player, struct ChessPiece* piece, int8_t pos) {
+void setPiecePos(Player* player, ChessPiece* piece, int8_t pos) {
 	if(piece->pos >= 0 && piece->pos < 64) {
 		player->pieces.pos[piece->pos] = false;
 	}
@@ -1096,14 +1096,14 @@ void setPiecePos(struct Player* player, struct ChessPiece* piece, int8_t pos) {
 	}
 }
 
-void setPieceFlags(struct ChessPiece* piece, bool hasMoved, bool jumped) {
+void setPieceFlags(ChessPiece* piece, bool hasMoved, bool jumped) {
 	piece->hasMoved = hasMoved;
 	piece->jumped   = jumped;
 }
 
-void initBoard(struct Board* board) {
-	*board = (struct Board) {
-		.white = (struct Player) {
+void initBoard(Board* board) {
+	*board = (Board) {
+		.white = (Player) {
 			.color = CP_WHITE,
 			.kingCheck = CP_NONE,
 			.kingPos = 60,
@@ -1124,7 +1124,7 @@ void initBoard(struct Board* board) {
 			.pawn_NK =  { .pos = 54, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
 			.pawn_RK =  { .pos = 55, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
 		},
-		.black = (struct Player) {
+		.black = (Player) {
 			.color = CP_BLACK,
 			.kingCheck = CP_NONE,
 			.kingPos = 4,
@@ -1183,9 +1183,9 @@ void initBoard(struct Board* board) {
 	board->black.pieces.pos[15] = true; board->black.pieces.piece[15] = &(board->black.pawn_RK);
 }
 
-size_t genMoves(struct Board* board) {
-	struct Player* active = board->active ? &board->black : &board->white;
-	struct Player* other  = board->active ? &board->white : &board->black;
+size_t genMoves(Board* board) {
+	Player* active = board->active ? &board->black : &board->white;
+	Player* other  = board->active ? &board->white : &board->black;
 
 	active->moves.size = 0;
 
@@ -1217,7 +1217,7 @@ size_t genMoves(struct Board* board) {
 	return active->moves.size;
 }
 
-bool checkStalemate(struct Board* board) {
+bool checkStalemate(Board* board) {
 	if(
 		board->white.rook_Q.taken &&
 		board->white.knight_Q.taken &&
@@ -1257,9 +1257,9 @@ bool checkStalemate(struct Board* board) {
 	return false;
 }
 
-void doMove(struct Board* board, int8_t moveNum) {
-	struct Player* player  = board->active ? &board->black : &board->white;
-	struct MoveDetails* mv = player->moves.mv + moveNum;
+void doMove(Board* board, int8_t moveNum) {
+	Player* player  = board->active ? &board->black : &board->white;
+	MoveDetails* mv = player->moves.mv + moveNum;
 
 	player->pieces.pos[mv->cp->pos]  = false;
 	player->pieces.pos[mv->newPos]   = true;
@@ -1272,11 +1272,11 @@ void doMove(struct Board* board, int8_t moveNum) {
 	}
 }
 
-void postMoveActions(struct Board* board, int8_t moveNum) {
-	struct Player* active = board->active ? &board->black : &board->white;
-	struct Player* other  = board->active ? &board->white : &board->black;
+void postMoveActions(Board* board, int8_t moveNum) {
+	Player* active = board->active ? &board->black : &board->white;
+	Player* other  = board->active ? &board->white : &board->black;
 
-	struct MoveDetails* mv = active->moves.mv + moveNum;
+	MoveDetails* mv = active->moves.mv + moveNum;
 
 	if(!mv->cp->hasMoved)           { mv->cp->hasMoved = true; }
 	if(mv->cp->jumped != mv->jump ) { mv->cp->jumped   = mv->jump; }
@@ -1316,7 +1316,7 @@ void postMoveActions(struct Board* board, int8_t moveNum) {
 	other->kingCheck  = getCheckStatus(active, other);
 }
 
-void switchTurn(struct Board* board) {
+void switchTurn(Board* board) {
 	board->active = board->active ? CP_WHITE : CP_BLACK;
 }
 

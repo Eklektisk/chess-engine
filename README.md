@@ -100,7 +100,7 @@ gcc -std=c99 <your_files> -L<path_to_folder/chessengine> -lchessengine -I<path_t
 When running your program, either move libchessengine.so to a valid folder or prepend `LD_LIBRARY_PATH=<path_to_folder/chessengine>` to your application.
 
 #### As a Static Library ####
-Compile the code as a shared library,...
+Compile the code as a static library,...
 ```make
 make static
 ```

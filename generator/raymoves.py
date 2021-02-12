@@ -77,7 +77,7 @@ def format(all_moves):
 
     formatted += '}'
 
-    var = 'struct Ray rayMoves[64][6][8]'
+    var = 'Ray rayMoves[64][6][8]'
 
     return f'{var} = {formatted};'
 

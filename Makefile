@@ -4,7 +4,7 @@
 # - Usage of += for appending to a variable
 
 PACKAGE = chess-engine
-VERSION = 1.0.1
+VERSION = 1.0.2
 
 CC        ?= cc
 CFLAGS    ?= -Wall -Wno-deprecated-declarations
@@ -15,7 +15,7 @@ OBJECTS = chessengine.o lookups.o
 
 all: shared static
 
-generate: generator/gen.py
+generate:
 	-@python generator/gen.py
 
 %.o: %.c

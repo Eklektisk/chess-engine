@@ -8,70 +8,70 @@ extern "C" {
 #include "DataTypes.h"
 #include "Constants.h"
 
-struct ChessPiece {
+typedef struct ChessPiece {
 	int8_t pos;
 	int8_t color;
 	int8_t type;
 	bool   taken;
 	bool   hasMoved;
 	bool   jumped;
-};
+} ChessPiece;
 
-struct ChessPieceMap {
+typedef struct ChessPieceMap {
 	bool pos[64];
 	struct ChessPiece* piece[64];
-};
+} ChessPieceMap;
 
-struct MoveDetails {
+typedef struct MoveDetails {
 	struct ChessPiece* cp;
 	int8_t newPos;
 	int8_t castle;
 	bool jump;
 	bool enPassant;
 	int8_t transform;
-};
+} MoveDetails;
 
-struct CPVector {
+typedef struct CPVector {
 	struct MoveDetails mv[139];
 	size_t size;
-};
+} CPVector;
 
-struct Player {
+typedef struct Player {
 	int8_t kingPos;
 	int8_t kingCheck;
 	int8_t color;
 
-	struct ChessPiece rook_Q;    // 14 moves
-	struct ChessPiece knight_Q;  //  8 moves
-	struct ChessPiece bishop_Q;  // 13 moves
-	struct ChessPiece queen;     // 27 moves
-	struct ChessPiece king;      // 10 moves
-	struct ChessPiece bishop_K;  // 13 moves
-	struct ChessPiece knight_K;  //  8 moves
-	struct ChessPiece rook_K;    // 14 moves
-	struct ChessPiece pawn_RQ;   //  4 moves
-	struct ChessPiece pawn_NQ;   //  4 moves
-	struct ChessPiece pawn_BQ;   //  4 moves
-	struct ChessPiece pawn_Q;    //  4 moves
-	struct ChessPiece pawn_K;    //  4 moves
-	struct ChessPiece pawn_BK;   //  4 moves
-	struct ChessPiece pawn_NK;   //  4 moves
-	struct ChessPiece pawn_RK;   //  4 moves
+	ChessPiece rook_Q;    // 14 moves
+	ChessPiece knight_Q;  //  8 moves
+	ChessPiece bishop_Q;  // 13 moves
+	ChessPiece queen;     // 27 moves
+	ChessPiece king;      // 10 moves
+	ChessPiece bishop_K;  // 13 moves
+	ChessPiece knight_K;  //  8 moves
+	ChessPiece rook_K;    // 14 moves
+	ChessPiece pawn_RQ;   //  4 moves
+	ChessPiece pawn_NQ;   //  4 moves
+	ChessPiece pawn_BQ;   //  4 moves
+	ChessPiece pawn_Q;    //  4 moves
+	ChessPiece pawn_K;    //  4 moves
+	ChessPiece pawn_BK;   //  4 moves
+	ChessPiece pawn_NK;   //  4 moves
+	ChessPiece pawn_RK;   //  4 moves
 
-	struct ChessPieceMap pieces; // 139 moves
+	ChessPieceMap pieces; // 139 moves
 
-	struct CPVector moves;
-};
+	CPVector moves;
+} Player;
 
-struct Board {
+typedef struct Board {
 	// TODO: Use isOver boolean to note when the game is over
 	// May need to modify interface to do so
 
-	struct Player white;
-	struct Player black;
+	Player white;
+	Player black;
 
 	uint8_t active; // Stores active player
-};
+} Board;
 
 void setPieceType(struct ChessPiece* piece, int8_t type);
 void setPiecePos(struct Player* player, struct ChessPiece* piece, int8_t pos);
