@@ -1,6 +1,7 @@
 *.o
 *.so
 *.a
+__pycache__
 examples/insrand
 examples/random
 examples/twoplayer

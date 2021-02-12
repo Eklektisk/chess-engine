@@ -87,7 +87,7 @@ def format(all_rays):
         for j in range(8):
             squares = ','.join(['%2d' % (square) for square in all_rays[i][j]] + ['-1' for n in range(7 - len(all_rays[i][j]))])
             size = len(all_rays[i][j])
-            formattedOne += f'\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
+            formattedOne += f'\t\t{{ .pos = {{{squares}}}, .size = {size} }},\n'
 
             for square in all_rays[i][j]:
                 ray_contains[square] = f'{j}'

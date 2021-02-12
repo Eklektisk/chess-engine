@@ -330,12 +330,12 @@ void findLegalOnRay(
 
 		if(validateMove(other, active, moveList->pos[i])) {
 			validList->mv[(validList->size)++] = (struct MoveDetails) {
-				cp: piece,
-				newPos: moveList->pos[i],
-				castle: CP_NONE,
-				jump: false,
-				enPassant: false,
-				transform: CP_NONE
+				.cp        = piece,
+				.newPos    = moveList->pos[i],
+				.castle    = CP_NONE,
+				.jump      = false,
+				.enPassant = false,
+				.transform = CP_NONE
 			};
 		}
 
@@ -361,12 +361,12 @@ void findLegalMoves(
 
 		if(validateMove(other, active, moveList->pos[i])) {
 			validList->mv[(validList->size)++] = (struct MoveDetails) {
-				cp: piece,
-				newPos: moveList->pos[i],
-				castle: CP_NONE,
-				jump: false,
-				enPassant: false,
-				transform: CP_NONE
+				.cp       = piece,
+				.newPos    = moveList->pos[i],
+				.castle    = CP_NONE,
+				.jump      = false,
+				.enPassant = false,
+				.transform = CP_NONE
 			};
 		}
 	}
@@ -418,36 +418,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 7:
 								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -456,12 +456,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							default: // FALL THROUGH
 								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -484,12 +484,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 									if(validateMove(other, active, -1)) {
 										validList->mv[validList->size++] = (struct MoveDetails) {
-											cp: piece,
-											newPos: piece->pos,
-											castle: CP_NONE,
-											jump: true,
-											enPassant: false,
-											transform: CP_NONE
+											.cp        = piece,
+											.newPos    = piece->pos,
+											.castle    = CP_NONE,
+											.jump      = true,
+											.enPassant = false,
+											.transform = CP_NONE
 										};
 									}
 								}
@@ -521,36 +521,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -562,36 +562,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -606,12 +606,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -623,12 +623,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -655,12 +655,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos + 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: true,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = true,
+										.transform = CP_NONE
 									};
 								}
 
@@ -677,12 +677,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos + 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: true,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = true,
+										.transform = CP_NONE
 									};
 								}
 
@@ -717,36 +717,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							case 56:
 								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -755,12 +755,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 							default: // FALL THROUGH
 								if(validateMove(other, active, -1)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -783,12 +783,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 									if(validateMove(other, active, -1)) {
 										validList->mv[validList->size++] = (struct MoveDetails) {
-											cp: piece,
-											newPos: piece->pos,
-											castle: CP_NONE,
-											jump: true,
-											enPassant: false,
-											transform: CP_NONE
+											.cp        = piece,
+											.newPos    = piece->pos,
+											.castle    = CP_NONE,
+											.jump      = true,
+											.enPassant = false,
+											.transform = CP_NONE
 										};
 									}
 								}
@@ -820,36 +820,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -861,36 +861,36 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_BISHOP
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_BISHOP
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_KNIGHT
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_KNIGHT
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_QUEEN
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_QUEEN
 									};
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_ROOK
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_ROOK
 									};
 								}
 
@@ -905,12 +905,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -922,12 +922,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: false,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = false,
+										.transform = CP_NONE
 									};
 								}
 
@@ -955,12 +955,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos - 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: true,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = true,
+										.transform = CP_NONE
 									};
 								}
 
@@ -977,12 +977,12 @@ void addMoves(struct ChessPiece* piece, struct CPVector* validList, struct Playe
 
 								if(validateMove(other, active, piece->pos - 8)) {
 									validList->mv[validList->size++] = (struct MoveDetails) {
-										cp: piece,
-										newPos: piece->pos,
-										castle: CP_NONE,
-										jump: false,
-										enPassant: true,
-										transform: CP_NONE
+										.cp        = piece,
+										.newPos    = piece->pos,
+										.castle    = CP_NONE,
+										.jump      = false,
+										.enPassant = true,
+										.transform = CP_NONE
 									};
 								}
 
@@ -1034,12 +1034,12 @@ void addCastle(struct Player* active, struct Player* other) {
 
 				if(validateMove(other, active, -1)) {
 					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
-						cp: &(active->king),
-						newPos: kingPos - 2,
-						castle: CP_CASTLE_Q,
-						jump: false,
-						enPassant: false,
-						transform: CP_NONE
+						.cp        = &(active->king),
+						.newPos    = kingPos - 2,
+						.castle    = CP_CASTLE_Q,
+						.jump      = false,
+						.enPassant = false,
+						.transform = CP_NONE
 					};
 				}
 			}
@@ -1061,12 +1061,12 @@ void addCastle(struct Player* active, struct Player* other) {
 
 				if(validateMove(other, active, -1)) {
 					active->moves.mv[active->moves.size++] = (struct MoveDetails) {
-						cp: &(active->king),
-						newPos: kingPos + 2,
-						castle: CP_CASTLE_K,
-						jump: false,
-						enPassant: false,
-						transform: CP_NONE
+						.cp        = &(active->king),
+						.newPos    = kingPos + 2,
+						.castle    = CP_CASTLE_K,
+						.jump      = false,
+						.enPassant = false,
+						.transform = CP_NONE
 					};
 				}
 			}
@@ -1103,49 +1103,49 @@ void setPieceFlags(struct ChessPiece* piece, bool hasMoved, bool jumped) {
 
 void initBoard(struct Board* board) {
 	*board = (struct Board) {
-		white: (struct Player) {
-			color: CP_WHITE,
-			kingCheck: CP_NONE,
-			kingPos: 60,
-			rook_Q:   { pos: 56, color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			knight_Q: { pos: 57, color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			bishop_Q: { pos: 58, color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			queen:    { pos: 59, color: CP_WHITE, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
-			king:     { pos: 60, color: CP_WHITE, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
-			bishop_K: { pos: 61, color: CP_WHITE, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			knight_K: { pos: 62, color: CP_WHITE, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			rook_K:   { pos: 63, color: CP_WHITE, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			pawn_RQ:  { pos: 48, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NQ:  { pos: 49, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BQ:  { pos: 50, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_Q:   { pos: 51, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_K:   { pos: 52, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BK:  { pos: 53, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NK:  { pos: 54, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_RK:  { pos: 55, color: CP_WHITE, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+		.white = (struct Player) {
+			.color = CP_WHITE,
+			.kingCheck = CP_NONE,
+			.kingPos = 60,
+			.rook_Q =   { .pos = 56, .color = CP_WHITE, .type = CP_ROOK,   .taken = false, .hasMoved = false, .jumped = false },
+			.knight_Q = { .pos = 57, .color = CP_WHITE, .type = CP_KNIGHT, .taken = false, .hasMoved = false, .jumped = false },
+			.bishop_Q = { .pos = 58, .color = CP_WHITE, .type = CP_BISHOP, .taken = false, .hasMoved = false, .jumped = false },
+			.queen =    { .pos = 59, .color = CP_WHITE, .type = CP_QUEEN,  .taken = false, .hasMoved = false, .jumped = false },
+			.king =     { .pos = 60, .color = CP_WHITE, .type = CP_KING,   .taken = false, .hasMoved = false, .jumped = false },
+			.bishop_K = { .pos = 61, .color = CP_WHITE, .type = CP_BISHOP, .taken = false, .hasMoved = false, .jumped = false },
+			.knight_K = { .pos = 62, .color = CP_WHITE, .type = CP_KNIGHT, .taken = false, .hasMoved = false, .jumped = false },
+			.rook_K =   { .pos = 63, .color = CP_WHITE, .type = CP_ROOK,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_RQ =  { .pos = 48, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_NQ =  { .pos = 49, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_BQ =  { .pos = 50, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_Q =   { .pos = 51, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_K =   { .pos = 52, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_BK =  { .pos = 53, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_NK =  { .pos = 54, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_RK =  { .pos = 55, .color = CP_WHITE, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
 		},
-		black: (struct Player) {
-			color: CP_BLACK,
-			kingCheck: CP_NONE,
-			kingPos: 4,
-			rook_Q:   { pos:  0, color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			knight_Q: { pos:  1, color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			bishop_Q: { pos:  2, color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			queen:    { pos:  3, color: CP_BLACK, type: CP_QUEEN,  taken: false, hasMoved: false, jumped: false },
-			king:     { pos:  4, color: CP_BLACK, type: CP_KING,   taken: false, hasMoved: false, jumped: false },
-			bishop_K: { pos:  5, color: CP_BLACK, type: CP_BISHOP, taken: false, hasMoved: false, jumped: false },
-			knight_K: { pos:  6, color: CP_BLACK, type: CP_KNIGHT, taken: false, hasMoved: false, jumped: false },
-			rook_K:   { pos:  7, color: CP_BLACK, type: CP_ROOK,   taken: false, hasMoved: false, jumped: false },
-			pawn_RQ:  { pos:  8, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NQ:  { pos:  9, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BQ:  { pos: 10, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_Q:   { pos: 11, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_K:   { pos: 12, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_BK:  { pos: 13, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_NK:  { pos: 14, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
-			pawn_RK:  { pos: 15, color: CP_BLACK, type: CP_PAWN,   taken: false, hasMoved: false, jumped: false },
+		.black = (struct Player) {
+			.color = CP_BLACK,
+			.kingCheck = CP_NONE,
+			.kingPos = 4,
+			.rook_Q =   { .pos =  0, .color = CP_BLACK, .type = CP_ROOK,   .taken = false, .hasMoved = false, .jumped = false },
+			.knight_Q = { .pos =  1, .color = CP_BLACK, .type = CP_KNIGHT, .taken = false, .hasMoved = false, .jumped = false },
+			.bishop_Q = { .pos =  2, .color = CP_BLACK, .type = CP_BISHOP, .taken = false, .hasMoved = false, .jumped = false },
+			.queen =    { .pos =  3, .color = CP_BLACK, .type = CP_QUEEN,  .taken = false, .hasMoved = false, .jumped = false },
+			.king =     { .pos =  4, .color = CP_BLACK, .type = CP_KING,   .taken = false, .hasMoved = false, .jumped = false },
+			.bishop_K = { .pos =  5, .color = CP_BLACK, .type = CP_BISHOP, .taken = false, .hasMoved = false, .jumped = false },
+			.knight_K = { .pos =  6, .color = CP_BLACK, .type = CP_KNIGHT, .taken = false, .hasMoved = false, .jumped = false },
+			.rook_K =   { .pos =  7, .color = CP_BLACK, .type = CP_ROOK,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_RQ =  { .pos =  8, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_NQ =  { .pos =  9, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_BQ =  { .pos = 10, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_Q =   { .pos = 11, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_K =   { .pos = 12, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_BK =  { .pos = 13, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_NK =  { .pos = 14, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
+			.pawn_RK =  { .pos = 15, .color = CP_BLACK, .type = CP_PAWN,   .taken = false, .hasMoved = false, .jumped = false },
 		},
-		active: CP_WHITE
+		.active = CP_WHITE
 	};
 
 	board->white.pieces.pos[56] = true; board->white.pieces.piece[56] = &(board->white.rook_Q);

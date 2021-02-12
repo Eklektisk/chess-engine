@@ -69,7 +69,7 @@ def format(all_moves):
             for k in range(8):
                 squares = ','.join(['%2d' % (square) for square in all_moves[i][j][k]] + ['-1' for n in range(7 - len(all_moves[i][j][k]))])
                 size = len(all_moves[i][j][k])
-                formatted += f'\t\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
+                formatted += f'\t\t\t{{ .pos  = {{{squares}}}, .size = {size} }},\n'
 
             formatted += '\t\t},\n'
 

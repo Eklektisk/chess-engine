@@ -133,7 +133,7 @@ def format(all_moves):
         for j in range(6):
             squares = ','.join(['%2d' % (square) for square in all_moves[i][j]] + ['-1' for n in range(8 - len(all_moves[i][j]))])
             size = len(all_moves[i][j])
-            formatted += f'\t\t{{ pos: {{{squares}}}, size: {size} }},\n'
+            formatted += f'\t\t{{ .pos = {{{squares}}}, .size = {size} }},\n'
 
         formatted += '\t},\n'
 

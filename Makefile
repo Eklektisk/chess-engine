@@ -1,22 +1,31 @@
-CC = gcc
-CFLAGS = -std=c99
-TARGET = libchessengine
+# POSIX-ish Makefile with extensions common to *BSD and GNU such as:
+# - Usage of backticks for shell evaluation
+# - Usage of ?= for defining variables when not already defined
+# - Usage of += for appending to a variable
+
+PACKAGE = chess-engine
+VERSION = 1.0.1
+
+CC        ?= cc
+CFLAGS    ?= -Wall -Wno-deprecated-declarations
+CFLAGS    += -std=c99 -pedantic -O2
+
 SRC = chessengine.c lookups.c
-OBJECTS = $(SRC:%.c=%.o)
+OBJECTS = chessengine.o lookups.o
 
 all: shared static
 
-generate:
+generate: generator/gen.py
 	-@python generator/gen.py
 
 %.o: %.c
-	$(CC) $(CFLAGS) -Wall -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 shared: $(OBJECTS)
-	$(CC) $(CFLAGS) -Wall -shared $^ -o $(TARGET).so
+	$(CC) $(CFLAGS) -shared $^ -o libchessengine.so
 
 static: $(OBJECTS)
-	ar rcs $(TARGET).a $^
+	ar rcs libchessengine.a $^
 
 .PHONY: all clean generate debug shared static
 
@@ -25,4 +34,5 @@ debug: all
 
 clean:
 	-@rm -vf *.o
-	-@rm -vf $(TARGET).so $(TARGET).a
+	-@rm -vf libchessengine.so libchessengine.a
+
