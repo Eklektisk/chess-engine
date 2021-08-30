@@ -42,18 +42,18 @@ typedef struct ChessGame {
 
 	ChessPlayer players[2];
 
+	char en_passant;
 	enum CheckStatus check_status;
-
 	enum Color active_player;
 
+	unsigned int turn_counter;
 	unsigned char hm_clock;
-	unsigned short int turn_counter;
 } ChessGame;
 
 typedef struct MoveOp {
 	unsigned char old_pos;
 	unsigned char new_pos;
-	unsigned char ref_id; /* Move index - for internal use only */
+	unsigned char _ref_id; /* Move index - for internal use only */
 	enum Piece new_type;
 } MoveOp;
 

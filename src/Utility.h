@@ -4,7 +4,7 @@
 #include "ChessEngine.h"
 
 int can_check_after_move(
-		ChessPiece** board,
+		ChessGame* game,
 		unsigned char start,
 		unsigned char king_pos,
 		unsigned char move_start,

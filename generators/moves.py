@@ -41,9 +41,29 @@
 #  /  |  \
 # 5   4   3
 
+# All inverted masks plus AllowEmpty bit used for checks are listed here
+MAY_BE_WHITE           = 0x0040
+MAY_BE_BLACK           = 0x0080
+MUST_BE_EMPTY          = 0x01ff
+MUST_BE_WHITE          = 0x0240
+MUST_BE_BLACK          = 0x0280
+MUST_BE_SPL_WHITE_PAWN = 0x0347
+MUST_BE_SPL_WHITE_ROOK = 0x035f
+MUST_BE_SPL_BLACK_PAWN = 0x0387
+MUST_BE_SPL_BLACK_ROOK = 0x039f
+
+# All move flags
+NORM = 0x00
+RKNG = 0x01
+CSLQ = 0x02
+CSLK = 0x03
+EPSN = 0x04
+PJMP = 0x05
+TRNS = 0x06
+
 class Move(dict):
-    def __init__(self, end, flag = 0x00):
-        self.end       = end
+    def __init__(self, end, flag = NORM):
+        self.end  = end
         self.flag = flag
 
     def print_flags(self):
@@ -55,17 +75,6 @@ class Move(dict):
                 'EnPassant',
                 'PawnJump',
                 'Transform'][self.flag]
-
-# All inverted masks plus AllowEmpty bit used for checks are listed here
-MAY_BE_WHITE           = 0x0040
-MAY_BE_BLACK           = 0x0080
-MUST_BE_EMPTY          = 0x01ff
-MUST_BE_WHITE          = 0x0240
-MUST_BE_BLACK          = 0x0280
-MUST_BE_SPL_WHITE_PAWN = 0x0347
-MUST_BE_SPL_WHITE_ROOK = 0x035f
-MUST_BE_SPL_BLACK_PAWN = 0x0387
-MUST_BE_SPL_BLACK_ROOK = 0x039f
 
 moves_list = [list([list() for j in range(14)]) for i in range(64)]
 
@@ -325,10 +334,10 @@ for start in range(64):
     if row > 0: # Checking along ray 0
         end = start - 8
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -356,10 +365,10 @@ for start in range(64):
     if col < 7: # Checking along ray 2
         end = start + 1
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -387,10 +396,10 @@ for start in range(64):
     if row < 7: # Checking along ray 4
         end = start + 8
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -418,10 +427,10 @@ for start in range(64):
     if col > 0: # Checking along ray 6
         end = start - 1
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -449,10 +458,10 @@ for start in range(64):
     if row > 0 and col < 7: # Checking along ray 1
         end = start - 7
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -462,10 +471,10 @@ for start in range(64):
     if row < 7 and col < 7: # Checking along ray 3
         end = start + 9
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -475,10 +484,10 @@ for start in range(64):
     if row < 7 and col > 0: # Checking along ray 5
         end = start + 7
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -488,10 +497,10 @@ for start in range(64):
     if row > 0 and col > 0: # Checking along ray 7
         end = start - 9
 
-        moves_list[start][ 1].append(Move(end, 0x01)) # Black King
-        moves_list[start][ 7].append(Move(end, 0x01)) # White King
-        moves_list[start][12].append(Move(end, 0x01)) # ! Black King
-        moves_list[start][13].append(Move(end, 0x01)) # ! White King
+        moves_list[start][ 1].append(Move(end, RKNG)) # Black King
+        moves_list[start][ 7].append(Move(end, RKNG)) # White King
+        moves_list[start][12].append(Move(end, RKNG)) # ! Black King
+        moves_list[start][13].append(Move(end, RKNG)) # ! White King
 
         moves_list[start][ 1][-1][end] = MAY_BE_WHITE
         moves_list[start][ 7][-1][end] = MAY_BE_BLACK
@@ -506,15 +515,15 @@ for start in range(64):
         # * One space along ray 4 to an empty square
         # * Capture a piece one space along either rays 3 or 5
         #
-        # Additionally, a black pawn transforms (0x06) into another
-        # piece when it reaches the final row H across the board
+        # Additionally, a black pawn transforms into another piece when
+        # it reaches the final row H across the board
         #
         # A white pawn may move:
         # * One space along ray 0 to an empty square
         # * Capture a piece one space along either rays 1 or 7
         #
-        # Additionally, a white pawn transforms (0x06) into another
-        # piece when it reaches the final row A across the board
+        # Additionally, a white pawn transforms into another piece when
+        # it reaches the final row A across the board
 
         moves_list[start][ 3].append(Move(start + 8)) # Black Pawn
         moves_list[start][ 9].append(Move(start - 8)) # White Pawn
@@ -522,10 +531,10 @@ for start in range(64):
         moves_list[start][ 3][-1][start + 8] = MUST_BE_EMPTY
         moves_list[start][ 9][-1][start - 8] = MUST_BE_EMPTY
 
-        if row == 1:
-            moves_list[start][ 9][-1].flag = 0x06
-        elif row == 6:
-            moves_list[start][ 3][-1].flag = 0x06
+        if row == 1:   # White is about to reach row A and transform
+            moves_list[start][ 9][-1].flag = TRNS
+        elif row == 6: # Black is about to reach row A and transform
+            moves_list[start][ 3][-1].flag = TRNS
 
         if col > 0:
             moves_list[start][ 3].append(Move(start + 7)) # Black Pawn
@@ -535,9 +544,9 @@ for start in range(64):
             moves_list[start][ 9][-1][start - 9] = MUST_BE_BLACK
 
             if row == 1:
-                moves_list[start][ 9][-1].flag = 0x06
+                moves_list[start][ 9][-1].flag = TRNS
             elif row == 6:
-                moves_list[start][ 3][-1].flag = 0x06
+                moves_list[start][ 3][-1].flag = TRNS
 
         if col < 7:
             moves_list[start][ 3].append(Move(start + 9)) # Black Pawn
@@ -547,29 +556,31 @@ for start in range(64):
             moves_list[start][ 9][-1][start - 7] = MUST_BE_BLACK
 
             if row == 1:
-                moves_list[start][ 9][-1].flag = 0x06
+                moves_list[start][ 9][-1].flag = TRNS
             elif row == 6:
-                moves_list[start][ 3][-1].flag = 0x06
+                moves_list[start][ 3][-1].flag = TRNS
 
 # Some moves can only occur if a certain piece is within a defined
 # subset of positions, leading to special moves
 
-# Pawns can move forward two spaces (flag 0x05) if they have yet to move
+# Pawns can move forward two spaces if they have yet to move
 #
 # This is automatically true for black pawns on row B (consistent of
 # positions 8 through 15) and for white pawns on row G (consistent of
 # positions 48 through 55)
 
 for start in range( 8, 16):
-    moves_list[start][ 3].append(Move(start + 16, 0x05)) # Black pawn
+    moves_list[start][ 3].append(Move(start + 16, PJMP)) # Black pawn
+    moves_list[start][ 3][-1][start +  8] = MUST_BE_EMPTY
     moves_list[start][ 3][-1][start + 16] = MUST_BE_EMPTY
 
 for start in range(48, 56):
-    moves_list[start][ 9].append(Move(start - 16, 0x05)) # White pawn
+    moves_list[start][ 9].append(Move(start - 16, PJMP)) # White pawn
+    moves_list[start][ 9][-1][start -  8] = MUST_BE_EMPTY
     moves_list[start][ 9][-1][start - 16] = MUST_BE_EMPTY
 
-# Additionally, pawns may capture other pawns en passant (flag 0x04) if
-# their first move moved them two spaces forward instead of one
+# Additionally, pawns may capture other pawns en passant if their first
+# move moved them two spaces forward instead of one
 #
 # This is only possible for white pawns on row C (consistent of
 # positions 16 through 23) and for black pawns on row F (consistent of
@@ -577,54 +588,54 @@ for start in range(48, 56):
 
 for start in range(24, 32):
     if start < 31:
-        moves_list[start][ 9].append(Move(start - 7, 0x04)) # White pawn
+        moves_list[start][ 9].append(Move(start - 7, EPSN)) # White pawn
 
-        moves_list[start][ 9][-1][start - 1] = MUST_BE_SPL_BLACK_PAWN
+        moves_list[start][ 9][-1][start + 1] = MUST_BE_SPL_BLACK_PAWN
         moves_list[start][ 9][-1][start - 7] = MUST_BE_EMPTY
 
     if start > 24:
-        moves_list[start][ 9].append(Move(start - 9, 0x04)) # White pawn
+        moves_list[start][ 9].append(Move(start - 9, EPSN)) # White pawn
 
         moves_list[start][ 9][-1][start - 1] = MUST_BE_SPL_BLACK_PAWN
         moves_list[start][ 9][-1][start - 9] = MUST_BE_EMPTY
 
 for start in range(32, 40):
     if start < 39:
-        moves_list[start][ 3].append(Move(start + 9, 0x04)) # Black pawn
+        moves_list[start][ 3].append(Move(start + 9, EPSN)) # Black pawn
 
         moves_list[start][ 3][-1][start + 1] = MUST_BE_SPL_WHITE_PAWN
         moves_list[start][ 3][-1][start + 9] = MUST_BE_EMPTY
 
     if start > 32:
-        moves_list[start][ 3].append(Move(start - 7, 0x04)) # Black pawn
+        moves_list[start][ 3].append(Move(start + 7, EPSN)) # Black pawn
 
-        moves_list[start][ 3][-1][start + 1] = MUST_BE_SPL_WHITE_PAWN
+        moves_list[start][ 3][-1][start - 1] = MUST_BE_SPL_WHITE_PAWN
         moves_list[start][ 3][-1][start + 7] = MUST_BE_EMPTY
 
-# Kings can castle (0x02 on king side, 0x03 on queen side) if neither
-# they nor the rook they are castling towards have yet to move
+# Kings can castle if neither they nor the rook they are castling
+# towards have yet to move
 #
 # This may only be true for:
 # * Black kings at A5 (position  4)
 # * White kings at H5 (position 60)
 
-moves_list[ 4][12].append(Move( 6, 0x02)) # ! Black King
+moves_list[ 4][12].append(Move( 6, CSLK)) # ! Black King
 moves_list[ 4][12][-1][ 7] = MUST_BE_SPL_BLACK_ROOK
 moves_list[ 4][12][-1][ 5] = MUST_BE_EMPTY
 moves_list[ 4][12][-1][ 6] = MUST_BE_EMPTY
 
-moves_list[ 4][12].append(Move( 2, 0x03)) # ! Black King
+moves_list[ 4][12].append(Move( 2, CSLQ)) # ! Black King
 moves_list[ 4][12][-1][ 0] = MUST_BE_SPL_BLACK_ROOK
 moves_list[ 4][12][-1][ 1] = MUST_BE_EMPTY
 moves_list[ 4][12][-1][ 3] = MUST_BE_EMPTY
 moves_list[ 4][12][-1][ 2] = MUST_BE_EMPTY
 
-moves_list[60][13].append(Move(62, 0x02)) # ! White King
+moves_list[60][13].append(Move(62, CSLK)) # ! White King
 moves_list[60][13][-1][63] = MUST_BE_SPL_WHITE_ROOK
 moves_list[60][13][-1][61] = MUST_BE_EMPTY
 moves_list[60][13][-1][62] = MUST_BE_EMPTY
 
-moves_list[60][13].append(Move(58, 0x03)) # ! White King
+moves_list[60][13].append(Move(58, CSLQ)) # ! White King
 moves_list[60][13][-1][56] = MUST_BE_SPL_WHITE_ROOK
 moves_list[60][13][-1][57] = MUST_BE_EMPTY
 moves_list[60][13][-1][59] = MUST_BE_EMPTY
@@ -696,7 +707,7 @@ for start in range(64):
         # all possible move options for the associated start pos/piece
 
         for j, move in enumerate(moves_list[start][i]):
-            if move.flag != 0x04: # EnPassant
+            if move.flag != EPSN: # EnPassant
                 squares[move.end] = '%2d' % (j)
             
             check_squares = list()

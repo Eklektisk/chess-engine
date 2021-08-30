@@ -15,7 +15,10 @@ typedef struct HistItem {
 } HistItem;
 
 typedef struct HistEntry {
-	unsigned char old_hm_clock;
+	unsigned int turn_counter;
+	unsigned char hm_clock;
+	enum Color active_player;
+	char en_passant;
 	HistItem items[2];
 } HistEntry;
 
@@ -25,19 +28,13 @@ typedef struct ChessHistory {
 	size_t capacity;
 } ChessHistory;
 
-void
-do_move_and_record(
+void do_move_and_record(
 		ChessGame* game,
 		MovesList* moves_list,
 		unsigned char index,
 		ChessHistory* history);
-
-void
-free_history(ChessHistory* history);
-
-size_t
-init_history(ChessHistory* history, size_t capacity);
-
+void free_history(ChessHistory* history);
+size_t init_history(ChessHistory* history, size_t capacity);
 size_t undo_moves(
 		ChessGame* game,
 		ChessHistory* history,

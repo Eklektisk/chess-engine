@@ -6224,7 +6224,7 @@ const MoveOptions move_options[64][14] = {
 				},
 				{ /* Move Num: 05 */
 					.end_pos    =  6,
-					.flag       = CastleQueen,
+					.flag       = CastleKing,
 					.num_checks = 3,
 					.squares    = { 7,  5,  6},
 					.inv_masks  = {
@@ -6234,7 +6234,7 @@ const MoveOptions move_options[64][14] = {
 				},
 				{ /* Move Num: 06 */
 					.end_pos    =  2,
-					.flag       = CastleKing,
+					.flag       = CastleQueen,
 					.num_checks = 4,
 					.squares    = { 0,  1,  3,  2},
 					.inv_masks  = {
@@ -10295,9 +10295,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 02 */
 					.end_pos    = 24,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {24},
+					.num_checks = 2,
+					.squares    = {16, 24},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -11673,9 +11674,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 25,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {25},
+					.num_checks = 2,
+					.squares    = {17, 25},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -13175,9 +13177,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 26,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {26},
+					.num_checks = 2,
+					.squares    = {18, 26},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -14663,9 +14666,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 27,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {27},
+					.num_checks = 2,
+					.squares    = {19, 27},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -16137,9 +16141,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 28,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {28},
+					.num_checks = 2,
+					.squares    = {20, 28},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -17613,9 +17618,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 29,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {29},
+					.num_checks = 2,
+					.squares    = {21, 29},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -19091,9 +19097,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 30,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {30},
+					.num_checks = 2,
+					.squares    = {22, 30},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -20525,9 +20532,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 02 */
 					.end_pos    = 31,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {31},
+					.num_checks = 2,
+					.squares    = {23, 31},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -34244,7 +34252,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 17,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {23, 17},
+					.squares    = {25, 17},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -35667,7 +35675,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 18,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {24, 18},
+					.squares    = {26, 18},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -37229,7 +37237,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 19,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {25, 19},
+					.squares    = {27, 19},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -38857,7 +38865,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 20,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {26, 20},
+					.squares    = {28, 20},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -40501,7 +40509,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 21,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {27, 21},
+					.squares    = {29, 21},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -42089,7 +42097,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 22,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {28, 22},
+					.squares    = {30, 22},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -43583,7 +43591,7 @@ const MoveOptions move_options[64][14] = {
 					.end_pos    = 23,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {29, 23},
+					.squares    = {31, 23},
 					.inv_masks  = {
 						0x0387,
 						0x01ff}
@@ -47001,10 +47009,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 26,
+					.end_pos    = 40,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {34, 40},
+					.squares    = {32, 40},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -48519,10 +48527,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 27,
+					.end_pos    = 41,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {35, 41},
+					.squares    = {33, 41},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -50111,10 +50119,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 28,
+					.end_pos    = 42,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {36, 42},
+					.squares    = {34, 42},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -51755,10 +51763,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 29,
+					.end_pos    = 43,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {37, 43},
+					.squares    = {35, 43},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -53379,10 +53387,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 30,
+					.end_pos    = 44,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {38, 44},
+					.squares    = {36, 44},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -54917,10 +54925,10 @@ const MoveOptions move_options[64][14] = {
 						0x01ff}
 				},
 				{ /* Move Num: 04 */
-					.end_pos    = 31,
+					.end_pos    = 45,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {39, 45},
+					.squares    = {37, 45},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -56328,10 +56336,10 @@ const MoveOptions move_options[64][14] = {
 						0x0240}
 				},
 				{ /* Move Num: 02 */
-					.end_pos    = 32,
+					.end_pos    = 46,
 					.flag       = EnPassant,
 					.num_checks = 2,
-					.squares    = {40, 46},
+					.squares    = {38, 46},
 					.inv_masks  = {
 						0x0347,
 						0x01ff}
@@ -70029,9 +70037,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 02 */
 					.end_pos    = 32,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {32},
+					.num_checks = 2,
+					.squares    = {40, 32},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -71467,9 +71476,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 33,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {33},
+					.num_checks = 2,
+					.squares    = {41, 33},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -72969,9 +72979,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 34,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {34},
+					.num_checks = 2,
+					.squares    = {42, 34},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -74449,9 +74460,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 35,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {35},
+					.num_checks = 2,
+					.squares    = {43, 35},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -75923,9 +75935,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 36,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {36},
+					.num_checks = 2,
+					.squares    = {44, 36},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -77407,9 +77420,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 37,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {37},
+					.num_checks = 2,
+					.squares    = {45, 37},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -78885,9 +78899,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 03 */
 					.end_pos    = 38,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {38},
+					.num_checks = 2,
+					.squares    = {46, 38},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -80259,9 +80274,10 @@ const MoveOptions move_options[64][14] = {
 				{ /* Move Num: 02 */
 					.end_pos    = 39,
 					.flag       = PawnJump,
-					.num_checks = 1,
-					.squares    = {39},
+					.num_checks = 2,
+					.squares    = {47, 39},
 					.inv_masks  = {
+						0x01ff,
 						0x01ff}
 				},
 			},
@@ -87047,7 +87063,7 @@ const MoveOptions move_options[64][14] = {
 				},
 				{ /* Move Num: 05 */
 					.end_pos    = 62,
-					.flag       = CastleQueen,
+					.flag       = CastleKing,
 					.num_checks = 3,
 					.squares    = {63, 61, 62},
 					.inv_masks  = {
@@ -87057,7 +87073,7 @@ const MoveOptions move_options[64][14] = {
 				},
 				{ /* Move Num: 06 */
 					.end_pos    = 58,
-					.flag       = CastleKing,
+					.flag       = CastleQueen,
 					.num_checks = 4,
 					.squares    = {56, 57, 59, 58},
 					.inv_masks  = {

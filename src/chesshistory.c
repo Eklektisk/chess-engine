@@ -2,8 +2,6 @@
 #include "MoveInfo.h"
 #include "Utility.h"
 
-#include <stdio.h>
-
 void
 do_move_and_record(
 		ChessGame* game,
@@ -35,7 +33,10 @@ do_move_and_record(
 
 	/* Copy game information */
 
-	hist_obj->old_hm_clock   = game->hm_clock;
+	hist_obj->hm_clock      = game->hm_clock;
+	hist_obj->turn_counter  = game->turn_counter;
+	hist_obj->active_player = game->active_player;
+	hist_obj->en_passant    = game->en_passant;
 
 	/* Log move information and the associated piece information prior
 	 * to afforementioned move */
@@ -50,7 +51,7 @@ do_move_and_record(
 	 * not have normally be taken or moved */
 
 	piece_idx = pieceset_to_index(game->board[start]->code);
-	move_idx  = move_obj->ref_id;
+	move_idx  = move_obj->_ref_id;
 
 	switch(move_options[start][piece_idx].options[move_idx].flag) {
 		case CastleQueen:
@@ -71,11 +72,11 @@ do_move_and_record(
 			/* Pawn is taken */
 			switch(game->active_player) {
 				case Black:
-					start -= 8;
+					start = end - 8;
 					break;
 
 				case White:
-					start += 8;
+					start = end + 8;
 					break;
 			}
 
@@ -134,17 +135,21 @@ size_t
 undo_moves(ChessGame* game, ChessHistory* history, size_t count_undo)
 {
 	int i;
-	HistEntry* hist_obj = history->log + history->size - 1;
+	HistEntry* hist_obj = history->log + history->size;
 
 	if(history->size < count_undo) {
 		count_undo = history->size;
 	}
 
-	for(i = 0; i < count_undo; ++i) {
-		HistItem* hist_item = hist_obj->items;
-		int start, end;
+	/* Reverse piece moves accourding to the number of moves to undo
+	 *
+	 * All other game state information is not reliant on future or
+	 * previous state information and therefore does not need to be
+	 * updated within the loop */
 
-		game->hm_clock = hist_obj->old_hm_clock;
+	for(i = 0; i < count_undo; ++i) {
+		int start, end;
+		HistItem* hist_item = (--hist_obj)->items;
 
 		/* Revert the last moved piece to its previous state */
 
@@ -157,20 +162,48 @@ undo_moves(ChessGame* game, ChessHistory* history, size_t count_undo)
 		hist_item->piece_start->code = hist_item->start_code;
 		hist_item->piece_start->pos  = hist_item->start_pos;
 
+		if(hist_item->piece_end) {
+			hist_item->piece_end->pos = end;
+		}
+
 		/* If a second piece was moved or changed, also revert it to its
-		 * previous state */
+		 * previous state
+		 *
+		 * Note that in all cases, the "end position" will always start
+		 * as NULL, as explained in do_move */
 
 		if((++hist_item)->piece_start) {
 			start = hist_item->start_pos; 
 			end   = hist_item->end_pos;
 
 			game->board[start] = hist_item->piece_start;
-			game->board[end]   = hist_item->piece_end;
+
+			if(end != -1) {
+				game->board[end] = NULL;
+			}
 
 			hist_item->piece_start->code = hist_item->start_code;
 			hist_item->piece_start->pos  = hist_item->start_pos;
 		}
+
+		/* If a piece should be given en passant, make sure that it
+		 * regains the special flag
+		 *
+		 * As en passant only lasts for a turn, any piece that should
+		 * lose en passant already lost it when its code was reset back
+		 * to its previous value */
+
+		if(hist_obj->en_passant != -1) {
+			game->board[(int) hist_obj->en_passant]->code &= 0x00ff;
+		}
 	}
+
+	/* Reset game information */
+
+	game->hm_clock      = hist_obj->hm_clock;
+	game->turn_counter  = hist_obj->turn_counter;
+	game->active_player = hist_obj->active_player;
+	game->en_passant    = hist_obj->en_passant;
 
 	history->size -= count_undo;
 

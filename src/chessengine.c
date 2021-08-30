@@ -2,7 +2,6 @@
 #include "MoveInfo.h"
 #include "Utility.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 #define ANY_PIECE   Bishop|King|Knight|Pawn|Queen|Rook
@@ -16,10 +15,14 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 	start     = moves_list->moves[index].old_pos;
 	end       = moves_list->moves[index].new_pos;
 	piece_idx = pieceset_to_index(game->board[start]->code);
-	move_idx  = moves_list->moves[index].ref_id;
+	move_idx  = moves_list->moves[index]._ref_id;
 	flags = move_options[start][piece_idx].options[move_idx].flag;
 
 	reset_hm_clock   = 0;
+
+	if(game->en_passant != -1) {
+		game->board[(unsigned char) game->en_passant]->code |= Normal;
+	}
 
 	switch(flags) {
 		case NormalMove:  /* FALL THROUGH */
@@ -37,6 +40,10 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 				reset_hm_clock = 1;
 			}
 
+			if(game->en_passant != -1) {
+				game->en_passant = -1;
+			}
+
 			game->board[end] = game->board[start];
 			game->board[start] = NULL;
 
@@ -46,6 +53,10 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 			break;
 
 		case CastleQueen:
+			if(game->en_passant != -1) {
+				game->en_passant = -1;
+			}
+
 			game->board[end] = game->board[start];
 			game->board[start] = NULL;
 
@@ -61,6 +72,10 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 			break;
 
 		case CastleKing:
+			if(game->en_passant != -1) {
+				game->en_passant = -1;
+			}
+
 			game->board[end] = game->board[start];
 			game->board[start] = NULL;
 
@@ -78,6 +93,10 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 		case EnPassant:
 			reset_hm_clock = 1;
 
+			if(game->en_passant != -1) {
+				game->en_passant = -1;
+			}
+
 			switch(game->active_player) {
 				case Black:
 					game->board[end - 8]->pos = -1;
@@ -90,17 +109,17 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 					break;
 			}
 
-			game->board[end]->pos = -1;
-
-			game->board[end] = game->board[start];
+			game->board[end]   = game->board[start];
 			game->board[start] = NULL;
 
-			game->board[end]->pos   = end;
+			game->board[end]->pos = end;
 
 			break;
 
 		case PawnJump:
 			reset_hm_clock  = 1;
+
+			game->en_passant = end;
 
 			game->board[end] = game->board[start];
 			game->board[start] = NULL;
@@ -112,6 +131,10 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 
 		case Transform:
 			reset_hm_clock = 1;
+
+			if(game->en_passant != -1) {
+				game->en_passant = -1;
+			}
 
 			if(game->board[end]) {
 				/* Capturing piece - Remove taken piece from other
@@ -144,7 +167,7 @@ do_move(ChessGame* game, MovesList* moves_list, unsigned char index)
 unsigned char
 generate_moves_list(ChessGame* game, MovesList* moves_list)
 {
-	int i, j, start, idx;
+	int i, j, start, end, idx;
 	ChessPlayer* active;
 	unsigned char size = 0;
 
@@ -152,8 +175,8 @@ generate_moves_list(ChessGame* game, MovesList* moves_list)
 
 	/* Only the king may move in order to escape double check */
 	if(game->check_status == DoubleCheck) {
-		start = active->king_index;
-		idx   = pieceset_to_index(active->pieces[start].code);
+		start = active->pieces[active->king_index].pos;
+		idx   = pieceset_to_index(game->board[start]->code);
 
 		for(i = 0; i < move_options[start][idx].num_options; ++i) {
 			if(
@@ -191,29 +214,30 @@ generate_moves_list(ChessGame* game, MovesList* moves_list)
 						start,
 						move_options[start][idx].options + j)
 			) {
+				end = move_options[start][idx].options[j].end_pos;
 				switch(move_options[start][idx].options[j].flag) {
 					case Transform:
 						moves_list->moves[size++] = (MoveOp) {
 							start,
-							move_options[start][idx].options[j].end_pos,
+							end,
 							j,
 							Bishop };
 
 						moves_list->moves[size++] = (MoveOp) {
 							start,
-							move_options[start][idx].options[j].end_pos,
+							end,
 							j,
 							Knight };
 
 						moves_list->moves[size++] = (MoveOp) {
 							start,
-							move_options[start][idx].options[j].end_pos,
+							end,
 							j,
 							Queen };
 
 						moves_list->moves[size++] = (MoveOp) {
 							start,
-							move_options[start][idx].options[j].end_pos,
+							end,
 							j,
 							Rook };
 
@@ -222,7 +246,7 @@ generate_moves_list(ChessGame* game, MovesList* moves_list)
 					default:
 						moves_list->moves[size++] = (MoveOp) {
 							start,
-							move_options[start][idx].options[j].end_pos,
+							end,
 							j,
 							Empty };
 
@@ -290,8 +314,8 @@ init_game(ChessGame* game)
 			},
 		},
 
+		.en_passant    = -1,
 		.active_player = White,
-
 		.check_status  = NotInCheck,
 
 		.hm_clock      =  0,

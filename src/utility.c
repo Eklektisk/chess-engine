@@ -5,7 +5,7 @@
 
 int
 can_check_after_move(
-		ChessPiece** board,
+		ChessGame* game,
 		unsigned char start,
 		unsigned char king_pos,
 		unsigned char move_start,
@@ -16,16 +16,17 @@ can_check_after_move(
 	ChessPiece* piece_ptr;
 	const MoveSignature* mov_sig;
 
-	if(board[start] == NULL) {
+	if(game->board[start] == NULL || start == move_end) {
 		return 0;
 	}
 
-	piece_idx = pieceset_to_index(board[start]->code);
+	piece_idx = pieceset_to_index(game->board[start]->code);
 	move_idx  = move_options[start][piece_idx].options_map[king_pos];
 
 	if(move_idx == -1) {
 		/* Piece cannot reach king no matter what, so it cannot put the
 		 * king in check */
+
 		return 0;
 	}
 
@@ -70,13 +71,13 @@ can_check_after_move(
 			piece_ptr = NULL;
 
 		} else if(pos == move_end) {
-			piece_ptr = board[move_start];
+			piece_ptr = game->board[move_start];
 
 		} else if(pos == mov_sig->end_pos) {
-			piece_ptr = board[king_pos];
+			piece_ptr = game->board[king_pos];
 
 		} else {
-			piece_ptr = board[pos];
+			piece_ptr = game->board[pos];
 		}
 
 		if(piece_ptr == NULL) {
@@ -174,7 +175,7 @@ is_move_legal(
 					return 0;
 			}
 
-			king_pos   = active->pieces[active->king_index].pos;
+			king_pos = active->pieces[active->king_index].pos;
 
 			break;
 
@@ -193,7 +194,7 @@ is_move_legal(
 
 		if(
 				can_check_after_move(
-					game->board, other->pieces[i].pos, king_pos,
+					game, other->pieces[i].pos, king_pos,
 					start, mov_sig->end_pos, ignore_pos)
 		) {
 			return 0;
@@ -224,7 +225,7 @@ is_move_legal(
 
 		if(
 				can_check_after_move(
-					game->board, other->pieces[i].pos, king_pos,
+					game, other->pieces[i].pos, king_pos,
 					start, mov_sig->end_pos, ignore_pos)
 		) {
 			return 0;
