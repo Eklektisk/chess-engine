@@ -3,6 +3,14 @@
 
 #include <stdlib.h>
 
+static int can_check_after_move(
+		ChessGame* game,
+		unsigned char start,
+		unsigned char king_pos,
+		unsigned char move_start,
+		unsigned char move_end,
+		char ignore_pos);
+
 int
 can_check_after_move(
 		ChessGame* game,
@@ -12,11 +20,12 @@ can_check_after_move(
 		unsigned char move_end,
 		char ignore_pos)
 {
-	int i, pos, piece_idx, move_idx;
+	unsigned int i, pos, piece_idx;
+	int move_idx;
 	ChessPiece* piece_ptr;
 	const MoveSignature* mov_sig;
 
-	if(game->board[start] == NULL || start == move_end) {
+	if(start == move_end || start == ignore_pos) {
 		return 0;
 	}
 
@@ -61,8 +70,8 @@ can_check_after_move(
 	 * * Reference the piece at move_start if the position move_end is
 	 *   needed
 	 *
-	 * Additionally, support for the afforementioned moves is not
-	 * included since they should not appear here */
+	 * Additionally, support for castling or en passant is not included
+	 * since they should not appear here */
 
 	for(i = 0; i < mov_sig->num_checks; ++i) {
 		pos = mov_sig->squares[i];
@@ -80,16 +89,24 @@ can_check_after_move(
 			piece_ptr = game->board[pos];
 		}
 
-		if(piece_ptr == NULL) {
-			switch(mov_sig->inv_masks[i] & NoEmpty) {
-				case AllowEmpty: continue;
-				case NoEmpty:    return 0;
+		if((mov_sig->inv_masks[i] & NoEmpty) == NoEmpty) {
+			if(
+					piece_ptr != NULL &&
+					(piece_ptr->code & mov_sig->inv_masks[i]) == 0
+			) {
+				continue;
+			}
+
+		} else { /* AllowEmpty */
+			if(
+					piece_ptr == NULL ||
+					(piece_ptr->code & mov_sig->inv_masks[i]) == 0
+			) {
+				continue;
 			}
 		}
 
-		if((piece_ptr->code & mov_sig->inv_masks[i]) != 0) {
-			return 0;
-		}
+		return 0;
 	}
 
 	return 1;
@@ -101,7 +118,7 @@ is_move_legal(
 		unsigned char start,
 		const MoveSignature* mov_sig)
 {
-	int i;
+	unsigned int i;
 	unsigned char king_pos;
 	char ignore_pos;
 
@@ -114,24 +131,18 @@ is_move_legal(
 	 * Additionally, the only way to escape double check is for the king
 	 * to move - making all other moves invalid */
 
-	switch(mov_sig->flag) {
-		case CastleQueen: /* FALL THROUGH */
-		case CastleKing:
-			if(game->check_status != NotInCheck) {
-				return 0;
-			}
+	static const int invalid_check_status[7] = {
+		DoubleCheck,               /* NormalMove  */
+		0,                         /* RegKingMove */
+		SingleCheck | DoubleCheck, /* CastleQueen */
+		SingleCheck | DoubleCheck, /* CastleKing  */
+		DoubleCheck,               /* EnPassant   */
+		DoubleCheck,               /* PawnJump    */
+		DoubleCheck,               /* Transform   */
+	};
 
-			break;
-
-		case RegKingMove:
-			break;
-
-		default:
-			if(game->check_status == DoubleCheck) {
-				return 0;
-			}
-
-			break;
+	if(game->check_status & invalid_check_status[mov_sig->flag]) {
+		return 0;
 	}
 
 	if(!is_move_pseudolegal(game->board, mov_sig)) {
@@ -162,26 +173,16 @@ is_move_legal(
 
 		case EnPassant:
 			/* Get the location of the pawn to be taken by en passant */
-			switch(game->active_player) {
-				case Black:
-					ignore_pos = mov_sig->end_pos - 8;
-					break;
+			ignore_pos = mov_sig->end_pos + (
+					game->active_player == Black ? -8 : 8);
 
-				case White:
-					ignore_pos = mov_sig->end_pos + 8;
-					break;
-
-				default: /* Invalid active player */
-					return 0;
-			}
-
-			king_pos = active->pieces[active->king_index].pos;
+			king_pos = active->king->pos;
 
 			break;
 
 		default:
 			ignore_pos = -1;
-			king_pos   = active->pieces[active->king_index].pos;
+			king_pos   = active->king->pos;
 	}
 
 	/* Loop through all of the opponent's pieces, and determine whether
@@ -202,8 +203,9 @@ is_move_legal(
 	}
 
 	/* In addition to the aforementioned rules, a king cannot
-	 * castle if such a move would move it through a square that
-	 * would otherwise put it into check */
+	 * castle through check, so also check against a dummy move as if
+	 * the king were to only move one square in the desired direction
+	 * rather than two */
 
 	switch(mov_sig->flag) {
 		case CastleQueen:
@@ -226,7 +228,7 @@ is_move_legal(
 		if(
 				can_check_after_move(
 					game, other->pieces[i].pos, king_pos,
-					start, mov_sig->end_pos, ignore_pos)
+					start, king_pos, ignore_pos)
 		) {
 			return 0;
 		}
@@ -240,7 +242,7 @@ is_move_pseudolegal(
 		ChessPiece** board,
 		const MoveSignature* mov_sig)
 {
-	unsigned char i, pos;
+	unsigned int i, pos;
 
 	for(i = 0; i < mov_sig->num_checks; ++i) {
 		pos = mov_sig->squares[i];
@@ -280,33 +282,35 @@ is_move_pseudolegal(
 		 *   * Kings castling (specifically when checking for a rook)
 		 */
 
-		if(board[pos] == NULL) {
-			switch(mov_sig->inv_masks[i] & NoEmpty) {
-				case AllowEmpty: continue;
-				case NoEmpty:    return 0;
+		if((mov_sig->inv_masks[i] & NoEmpty) == NoEmpty) {
+			if(
+					board[pos] != NULL &&
+					(board[pos]->code & mov_sig->inv_masks[i]) == 0
+			) {
+				continue;
+			}
+
+		} else { /* AllowEmpty */
+			if(
+					board[pos] == NULL ||
+					(board[pos]->code & mov_sig->inv_masks[i]) == 0
+			) {
+				continue;
 			}
 		}
 
-		if((board[pos]->code & mov_sig->inv_masks[i]) != 0) {
-			return 0;
-		}
+		return 0;
 	}
 
 	return 1;
 }
 
-int
+unsigned int
 opp_player_to_index(enum Color color)
 {
-	switch(color) {
-		case Black: return 1;
-		case White: return 0;
-
-		default: return -1; /* An invalid color was passed */
-	}
+	return color == Black ? 1 : 0;
 }
-
-int
+unsigned int
 pieceset_to_index(unsigned short int piece)
 {
 	/* Only the king has extra moves when marked as special.
@@ -314,102 +318,56 @@ pieceset_to_index(unsigned short int piece)
 	 * "Special" pawns and rooks enable other pieces to make special
 	 * moves using them as opposed to being able to make special moves
 	 * themselves. Therefore, they return the same index as their
-	 * "normal" counterparts */
+	 * "normal" counterparts 
+	 *
+	 * When indexing along table, all pieces are bit-shifted right one
+	 * in order to reduce the amount of space needed. This saves space
+	 * where the table would otherwise need 416 elements to convey the
+	 * same information.
+	 *
+	 * Normal  Black Bishop 0x0141 -> 0x00A0 = 160 ->  0 || [0x21] = 12
+	 * Normal  Black King   0x0142 -> 0x00A1 = 161 ->  1 || [0x24] =  3
+	 * Normal  Black Knight 0x0144 -> 0x00A2 = 162 ->  2 || [0x30] =  5
+	 * Normal  Black Pawn   0x0148 -> 0x00A4 = 164 ->  3 || [0x41] = 13
+	 * Special Black Pawn   0x0048 -> 0x0024 =  36 ->  3 || [0x44] =  9
+	 * Normal  Black Queen  0x0150 -> 0x00A8 = 168 ->  4 || [0x50] = 11
+	 * Normal  Black Rook   0x0160 -> 0x00B0 = 176 ->  5 || [0xA0] =  0
+	 * Special Black Rook   0x0060 -> 0x0030 =  48 ->  5 || [0xA1] =  1
+	 * Normal  White Bishop 0x0181 -> 0x00C0 = 192 ->  6 || [0xA2] =  2
+	 * Normal  White King   0x0182 -> 0x00C1 = 193 ->  7 || [0xA4] =  3
+	 * Normal  White Knight 0x0184 -> 0x00C2 = 194 ->  8 || [0xA8] =  4
+	 * Normal  White Pawn   0x0188 -> 0x00C4 = 196 ->  9 || [0xB0] =  5
+	 * Special White Pawn   0x0088 -> 0x0044 =  68 ->  9 || [0xC0] =  6
+	 * Normal  White Queen  0x0190 -> 0x00C8 = 200 -> 10 || [0xC1] =  7
+	 * Normal  White Rook   0x01A0 -> 0x00D0 = 208 -> 11 || [0xC2] =  8
+	 * Special White Rook   0x00A0 -> 0x0050 =  80 -> 11 || [0xC4] =  9
+	 * Special Black King   0x0042 -> 0x0021 =  33 -> 12 || [0xC8] = 10
+	 * Special White King   0x0082 -> 0x0041 =  65 -> 13 || [0xD0] = 11
+	 */
 
-	switch(piece) {
-		case Normal  | Black | Bishop: return  0;
-		case Normal  | Black | King:   return  1;
-		case Normal  | Black | Knight: return  2;
-		case Normal  | Black | Pawn:   return  3;
-		case Special | Black | Pawn:   return  3;
-		case Normal  | Black | Queen:  return  4;
-		case Normal  | Black | Rook:   return  5;
-		case Special | Black | Rook:   return  5;
-		case Normal  | White | Bishop: return  6;
-		case Normal  | White | King:   return  7;
-		case Normal  | White | Knight: return  8;
-		case Normal  | White | Pawn:   return  9;
-		case Special | White | Pawn:   return  9;
-		case Normal  | White | Queen:  return 10;
-		case Normal  | White | Rook:   return 11;
-		case Special | White | Rook:   return 11;
-		case Special | Black | King:   return 12;
-		case Special | White | King:   return 13;
+	static const int piece_indicies[209] = {
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 12, 14, 14,  3, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		 5, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 13, 14, 14,  9, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		11, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		 0,  1,  2, 14,  3, 14, 14, 14,  4, 14, 14, 14, 14, 14, 14, 14,
+		 5, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+		 6,  7,  8, 14,  9, 14, 14, 14, 10, 14, 14, 14, 14, 14, 14, 14,
+		11
+	};
 
-		default: return -1; /* An invalid bitset was passed to piece */
-	}
+	return piece_indicies[piece >> 1];
 }
 
-int
+unsigned int
 player_to_index(enum Color color)
 {
-	switch(color) {
-		case Black: return 0;
-		case White: return 1;
-
-		default: return -1; /* An invalid color was passed */
-	}
-}
-
-enum CheckStatus
-verify_check_status(ChessGame* game, enum Color player_color)
-{
-	int i, end;
-	enum CheckStatus check_status = NotInCheck;
-
-	ChessPlayer* check_player; /* Check if this player is in check */
-	ChessPlayer* other_player; /* May be put in check by this player */
-
-	check_player = game->players + player_to_index(player_color);
-	other_player = game->players + opp_player_to_index(player_color);
-
-	/* If a piece from other_player can reach the king, then
-	 * check_player is in some form of check
-	 *
-	 * As such, check_player's king position is the target
-	 * space for other_player's pieces */
-
-	end = check_player->pieces[check_player->king_index].pos;
-
-	for(i = 0; i < 16; ++i) {
-		int piece_idx, move_idx;
-		int start = other_player->pieces[i].pos;
-
-		if(start == -1) {
-			continue;
-		}
-
-		piece_idx = pieceset_to_index(game->board[start]->code);
-		move_idx  = move_options[start][piece_idx].options_map[end];
-
-		if(move_idx == -1) {
-			continue;
-		}
-
-		if(
-				is_move_pseudolegal(
-					game->board,
-					move_options[start][piece_idx].options + move_idx)
-		) {
-			switch(check_status) {
-				case NotInCheck:
-					/* There is a chance other pieces may put the king
-					 * in check, so do not return yet */
-
-					check_status = SingleCheck;
-					break;
-
-				default:
-					/* At least one piece was previously found to put
-					 * the king in check. Since the function is now
-					 * guaranteed to return DoubleCheck, it is safe to
-					 * stop looking here */
-
-					return DoubleCheck;
-			}
-		}
-	}
-
-	return check_status;
+	return color == Black ? 0 : 1;
 }
 

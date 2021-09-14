@@ -7,19 +7,21 @@
 
 typedef struct HistItem {
 	ChessPiece* piece_start;
-	char start_pos;
+	ChessPiece* piece_end;
+
 	unsigned short int start_code;
 
-	ChessPiece* piece_end;
+	char start_pos;
 	char end_pos;
 } HistItem;
 
 typedef struct HistEntry {
-	unsigned int turn_counter;
-	unsigned char hm_clock;
-	enum Color active_player;
-	char en_passant;
 	HistItem items[2];
+
+	unsigned int turn_counter;
+	enum Color active_player;
+	unsigned char hm_clock;
+	char en_passant;
 } HistEntry;
 
 typedef struct ChessHistory {
@@ -28,16 +30,14 @@ typedef struct ChessHistory {
 	size_t capacity;
 } ChessHistory;
 
-void do_move_and_record(
-		ChessGame* game,
-		MovesList* moves_list,
-		unsigned char index,
-		ChessHistory* history);
 void free_history(ChessHistory* history);
 size_t init_history(ChessHistory* history, size_t capacity);
-size_t undo_moves(
+void record_move(
 		ChessGame* game,
-		ChessHistory* history,
-		size_t count_undo);
+		MoveOp* move_obj,
+		ChessHistory* history);
+size_t undo_move(
+		ChessGame* game,
+		ChessHistory* history);
 
 #endif

@@ -74,8 +74,10 @@ perft_test(
 
 	if(curr_depth < max_depth - 1) {
 		for(i = 0; i < moves.size; ++i) {
-			do_move_and_record(game, &moves, i, history);
-			update(game);
+			record_move(game, moves.moves + i, history);
+			update_antemove(game, moves.moves + i);
+			do_move(game, moves.moves + i);
+			update_postmove(game);
 
 			perft_test(
 					game,
@@ -84,20 +86,26 @@ perft_test(
 					max_depth,
 					results);
 
-			undo_moves(game, history, 1);
+			undo_move(game, history);
 		}
 	}
 }
 
 int
-main()
+main(int argc, char** argv)
 {
 	ChessGame chess_game;
 	ChessHistory history;
 	unsigned int max_depth, i;
 	size_t* count_moves;
 
-	max_depth = 7;
+	max_depth = argc > 1
+		? (unsigned int) atoi(argv[1])
+		: 0;
+
+	if(max_depth == 0) {
+		max_depth = 6;
+	}
 
 	count_moves = calloc(max_depth, sizeof(size_t));
 	if(!count_moves) {
@@ -110,6 +118,12 @@ main()
 	}
 
 	init_game(&chess_game);
+
+	if(argc > 2) {
+		load_game(&chess_game, argv[2]);
+	}
+
+	print(&chess_game);
 
 	perft_test(&chess_game, &history, 0, max_depth, count_moves);
 

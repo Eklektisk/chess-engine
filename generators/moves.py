@@ -697,7 +697,7 @@ for start in range(64):
         # `MoveOptions.options_map`. It validates whether a piece can
         # potentially land on a certain square, pos:
         #
-        #   MoveOptions.options_map[pos] != -1
+        #   MoveOptions.options_map[pos] & 255 == 0
         #
         # and if so, what index a move to such a position is associated
         # with within `MoveOptions.options`

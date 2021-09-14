@@ -4,57 +4,53 @@
 # - Usage of += for appending to a variable
 
 PACKAGE = chess-engine
-VERSION = 2-0.1.0
+VERSION = 2-1.0.0
 
 CC        ?= cc
 CFLAGS    ?= -Wall -Wno-deprecated-declarations
-CFLAGS    += -std=c99 -pedantic -O3
-MAKE      ?= make
+CFLAGS    += -std=c99 \
+			 -pedantic \
+			 -Ofast \
+			 -march=native \
+			 -fuse-linker-plugin \
+			 -flto
 
 GENDIR = generators
 SRCDIR = src
 OBJDIR = build
 INCDIR = include
 LIBDIR = lib
-EXPDIR = examples
+XMPDIR = examples
 BINDIR = bin
 
 INSTALLDIR ?= /usr/local
 
 .PHONY: all install uninstall debug callgrind clean mostlyclean
 
-all: $(LIBDIR)/libchessengine.so $(BINDIR)/perft-static
+all: $(BINDIR)/perft
 
 install: \
-	$(LIBDIR)/libchessengine.so $(LIBDIR)/libchessengine.a \
-	$(INCDIR)/ChessEngine.h $(INCDIR)/ChessHistory.h
+	$(LIBDIR)/libchessengine.a $(INCDIR)/ChessEngine.h \
+	$(INCDIR)/ChessHistory.h
 	-@mkdir -pv $(INSTALLDIR)/$(LIBDIR)
 	-@mkdir -pv $(INSTALLDIR)/$(INCDIR)
-	cp $(LIBDIR)/libchessengine.so $(INSTALLDIR)/$(LIBDIR)/
 	cp $(LIBDIR)/libchessengine.a $(INSTALLDIR)/$(LIBDIR)/
 	cp $(INCDIR)/ChessEngine.h $(INSTALLDIR)/$(INCDIR)/
 	cp $(INCDIR)/ChessHistory.h $(INSTALLDIR)/$(INCDIR)/
 
 uninstall:
-	rm $(INSTALLDIR)/$(LIBDIR)/libchessengine.so \
-		$(INSTALLDIR)/$(LIBDIR)/libchessengine.a \
+	-rm $(INSTALLDIR)/$(LIBDIR)/libchessengine.a \
 		$(INSTALLDIR)/$(INCDIR)/ChessEngine.h \
 		$(INSTALLDIR)/$(INCDIR)/ChessHistory.h
 
-$(BINDIR)/perft-static: $(OBJDIR)/perft.o $(LIBDIR)/libchessengine.a
+$(BINDIR)/perft: $(OBJDIR)/perft.o $(LIBDIR)/libchessengine.a
 	@mkdir -pv $(BINDIR)
 	$(CC) $(CFLAGS) -static $< -L$(LIBDIR) -lchessengine -o $@
 
-$(OBJDIR)/perft.o: $(EXPDIR)/perft.c $(INCDIR)/ChessEngine.h \
+$(OBJDIR)/perft.o: $(XMPDIR)/perft.c $(INCDIR)/ChessEngine.h \
 	$(INCDIR)/ChessHistory.h
 	@mkdir -pv $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(INCDIR) -fPIC -c $< -o $@
-
-$(LIBDIR)/libchessengine.so: \
-	$(OBJDIR)/chessengine.o $(OBJDIR)/chesshistory.o \
-	$(OBJDIR)/moveinfo.o $(OBJDIR)/utility.o
-	@mkdir -pv $(LIBDIR)
-	$(CC) $(CFLAGS) -shared $^ -o $@
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 $(LIBDIR)/libchessengine.a: \
 	$(OBJDIR)/chessengine.o $(OBJDIR)/chesshistory.o \
@@ -66,23 +62,22 @@ $(OBJDIR)/chessengine.o: \
 	$(SRCDIR)/chessengine.c $(SRCDIR)/MoveInfo.h $(SRCDIR)/Utility.h \
 	$(INCDIR)/ChessEngine.h
 	@mkdir -pv $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(INCDIR) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 $(OBJDIR)/chesshistory.o: \
 	$(SRCDIR)/chesshistory.c $(SRCDIR)/MoveInfo.h $(SRCDIR)/Utility.h \
 	$(INCDIR)/ChessEngine.h $(INCDIR)/ChessHistory.h 
 	@mkdir -pv $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(INCDIR) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 $(OBJDIR)/moveinfo.o: $(SRCDIR)/moveinfo.c $(SRCDIR)/MoveInfo.h
 	@mkdir -pv $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(INCDIR) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 $(OBJDIR)/utility.o: $(SRCDIR)/utility.c $(SRCDIR)/MoveInfo.h \
 	$(SRCDIR)/Utility.h $(INCDIR)/ChessEngine.h
 	@mkdir -pv $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(INCDIR) -fPIC -c $< -o $@
-
+	$(CC) $(CFLAGS) -I$(INCDIR) -c $< -o $@
 
 $(SRCDIR)/moveinfo.c: $(GENDIR)/moves.py
 	python $< > $@
@@ -90,8 +85,9 @@ $(SRCDIR)/moveinfo.c: $(GENDIR)/moves.py
 debug: CFLAGS += -g -DDEBUG
 debug: all
 
-callgrind: $(BINDIR)/perft-static
-	valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes $<
+callgrind: $(BINDIR)/perft
+	valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes \
+		--cache-sim=yes --branch-sim=yes $<
 
 mostlyclean:
 	-@rm -vf $(OBJDIR)/*

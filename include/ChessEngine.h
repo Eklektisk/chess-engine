@@ -33,27 +33,26 @@ typedef struct ChessPiece {
 } ChessPiece;
 
 typedef struct ChessPlayer {
+	ChessPiece* king;
 	ChessPiece pieces[16];
-	unsigned char king_index;
 } ChessPlayer;
 
 typedef struct ChessGame {
-	ChessPiece* board[64];
-
-	ChessPlayer players[2];
+	unsigned int turn_counter;
+	unsigned char hm_clock;
 
 	char en_passant;
 	enum CheckStatus check_status;
 	enum Color active_player;
 
-	unsigned int turn_counter;
-	unsigned char hm_clock;
+	ChessPlayer players[2];
+	ChessPiece* board[64];
 } ChessGame;
 
 typedef struct MoveOp {
 	unsigned char old_pos;
 	unsigned char new_pos;
-	unsigned char _ref_id; /* Move index - for internal use only */
+	unsigned char _flag; /* For internal use only */
 	enum Piece new_type;
 } MoveOp;
 
@@ -62,14 +61,13 @@ typedef struct MovesList {
 	unsigned char size;
 } MovesList;
 
-void do_move(
-		ChessGame* game,
-		MovesList* moves_list,
-		unsigned char index);
+void do_move(ChessGame* game, MoveOp* move_obj);
 unsigned char generate_moves_list(
 		ChessGame* game,
 		MovesList* moves_list);
 void init_game(ChessGame* game);
-void update(ChessGame* game);
+void load_game(ChessGame* game, char* fen_string);
+void update_antemove(ChessGame* game, MoveOp* move_obj);
+void update_postmove(ChessGame* game);
 
 #endif

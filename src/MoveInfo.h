@@ -17,8 +17,8 @@ enum MoveFlags {
 };
 
 typedef struct MoveSignature {
-	char end_pos;
 	enum MoveFlags flag;
+	char end_pos;
 
 	unsigned char num_checks;
 	unsigned char squares[7];
@@ -26,10 +26,10 @@ typedef struct MoveSignature {
 } MoveSignature;
 
 typedef struct MoveOptions {
-	MoveSignature options[27];
-
-	char options_map[64];
 	unsigned char num_options;
+	char options_map[64];
+
+	MoveSignature options[27];
 } MoveOptions;
 
 extern const MoveOptions move_options[64][14];
